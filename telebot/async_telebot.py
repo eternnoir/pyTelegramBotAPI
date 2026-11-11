@@ -3645,7 +3645,7 @@ class AsyncTeleBot:
         return types.ChatMember.de_json(result)
 
     async def send_message(
-            self, chat_id: Union[int, str], text: str,
+            self, chat_id: Optional[Union[int, str]], text: str,
             parse_mode: Optional[str]=None,
             entities: Optional[List[types.MessageEntity]]=None,
             disable_web_page_preview: Optional[bool]=None,
@@ -3675,7 +3675,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendmessage
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param text: Text of the message to be sent
@@ -4701,7 +4701,7 @@ class AsyncTeleBot:
         )
 
     async def send_photo(
-            self, chat_id: Union[int, str], photo: Union[Any, str],
+            self, chat_id: Optional[Union[int, str]], photo: Union[Any, str],
             caption: Optional[str]=None, parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             disable_notification: Optional[bool]=None,
@@ -4727,7 +4727,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendphoto
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param photo: Photo to send. Pass a file_id as String to send a photo that exists on the Telegram servers (recommended),
@@ -4848,7 +4848,7 @@ class AsyncTeleBot:
         )
 
     async def send_live_photo(
-            self, chat_id: Union[int, str], live_photo: Union[Any, str], photo: Union[Any, str],
+            self, chat_id: Optional[Union[int, str]], live_photo: Union[Any, str], photo: Union[Any, str],
             message_thread_id: Optional[int] = None, direct_messages_topic_id: Optional[int]=None,
             business_connection_id: Optional[str]=None,
             caption: Optional[str]=None, parse_mode: Optional[str]=None,
@@ -4873,7 +4873,7 @@ class AsyncTeleBot:
         :param business_connection_id: Unique identifier of the business connection on behalf of which the message will be sent
         :type business_connection_id: :obj:`str`
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param live_photo: Live photo video to send. The video must be no longer than 10 seconds and must not exceed 10 MB in size.
@@ -4951,7 +4951,7 @@ class AsyncTeleBot:
         )
 
     async def send_audio(
-            self, chat_id: Union[int, str], audio: Union[Any, str],
+            self, chat_id: Optional[Union[int, str]], audio: Union[Any, str],
             caption: Optional[str]=None, duration: Optional[int]=None,
             performer: Optional[str]=None, title: Optional[str]=None,
             reply_to_message_id: Optional[int]=None,
@@ -4983,7 +4983,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendaudio
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param audio: Audio file to send. Pass a file_id as String to send an audio file that exists on the Telegram servers (recommended),
@@ -5118,7 +5118,7 @@ class AsyncTeleBot:
         )
 
     async def send_voice(
-            self, chat_id: Union[int, str], voice: Union[Any, str],
+            self, chat_id: Optional[Union[int, str]], voice: Union[Any, str],
             caption: Optional[str]=None, duration: Optional[int]=None,
             reply_to_message_id: Optional[int]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
@@ -5143,7 +5143,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendvoice
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param voice: Audio file to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended),
@@ -5259,7 +5259,7 @@ class AsyncTeleBot:
         )
 
     async def send_document(
-            self, chat_id: Union[int, str], document: Union[Any, str],
+            self, chat_id: Optional[Union[int, str]], document: Union[Any, str],
             reply_to_message_id: Optional[int]=None,
             caption: Optional[str]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
@@ -5289,7 +5289,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#senddocument
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param document: (document) File to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a
@@ -5433,7 +5433,7 @@ class AsyncTeleBot:
         )
 
     async def send_sticker(
-            self, chat_id: Union[int, str], sticker: Union[Any, str],
+            self, chat_id: Optional[Union[int, str]], sticker: Union[Any, str],
             reply_to_message_id: Optional[int]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
             disable_notification: Optional[bool]=None,
@@ -5458,7 +5458,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendsticker
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param sticker: Sticker to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL
@@ -5573,7 +5573,7 @@ class AsyncTeleBot:
         )
 
     async def send_video(
-            self, chat_id: Union[int, str], video: Union[Any, str],
+            self, chat_id: Optional[Union[int, str]], video: Union[Any, str],
             duration: Optional[int]=None,
             width: Optional[int]=None,
             height: Optional[int]=None,
@@ -5609,7 +5609,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendvideo
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param video: Video to send. You can either pass a file_id as String to resend a video that is already on the Telegram servers, or upload a new video file using multipart/form-data.
@@ -5763,7 +5763,7 @@ class AsyncTeleBot:
                 ephemeral_message_parameters=ephemeral_message_parameters))
 
     async def send_animation(
-            self, chat_id: Union[int, str], animation: Union[Any, str],
+            self, chat_id: Optional[Union[int, str]], animation: Union[Any, str],
             duration: Optional[int]=None,
             width: Optional[int]=None,
             height: Optional[int]=None,
@@ -5796,7 +5796,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendanimation
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param animation: Animation to send. Pass a file_id as String to send an animation that exists on the Telegram servers (recommended),
@@ -5938,7 +5938,7 @@ class AsyncTeleBot:
         )
 
     async def send_video_note(
-            self, chat_id: Union[int, str], data: Union[Any, str],
+            self, chat_id: Optional[Union[int, str]], data: Union[Any, str],
             duration: Optional[int]=None,
             length: Optional[int]=None,
             reply_to_message_id: Optional[int]=None,
@@ -5965,7 +5965,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendvideonote
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param data: Video note to send. Pass a file_id as String to send a video note that exists on the Telegram servers (recommended)
@@ -6267,7 +6267,7 @@ class AsyncTeleBot:
         return [types.Message.de_json(msg) for msg in result]
 
     async def send_location(
-            self, chat_id: Union[int, str],
+            self, chat_id: Optional[Union[int, str]],
             latitude: float, longitude: float,
             live_period: Optional[int]=None,
             reply_to_message_id: Optional[int]=None,
@@ -6294,7 +6294,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendlocation
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param latitude: Latitude of the location
@@ -6517,7 +6517,7 @@ class AsyncTeleBot:
                 self.token, chat_id, message_id, inline_message_id, reply_markup, timeout, business_connection_id))
 
     async def send_venue(
-            self, chat_id: Union[int, str],
+            self, chat_id: Optional[Union[int, str]],
             latitude: float, longitude: float,
             title: str, address: str,
             foursquare_id: Optional[str]=None,
@@ -6545,7 +6545,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendvenue
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param latitude: Latitude of the venue
@@ -6670,7 +6670,7 @@ class AsyncTeleBot:
         )
 
     async def send_contact(
-            self, chat_id: Union[int, str], phone_number: str,
+            self, chat_id: Optional[Union[int, str]], phone_number: str,
             first_name: str, last_name: Optional[str]=None,
             vcard: Optional[str]=None,
             disable_notification: Optional[bool]=None,
@@ -6694,7 +6694,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendcontact
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param phone_number: Contact's phone number
@@ -6807,7 +6807,7 @@ class AsyncTeleBot:
         )
     
     async def send_rich_message(
-            self, chat_id: Union[int, str],
+            self, chat_id: Optional[Union[int, str]],
             rich_message: types.InputRichMessage,
             business_connection_id: Optional[str]=None,
             message_thread_id: Optional[int]=None,
@@ -6826,7 +6826,7 @@ class AsyncTeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendrichmessage
 
-        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param rich_message: The message to be sent
@@ -9833,7 +9833,10 @@ class AsyncTeleBot:
         return await asyncio_helper.send_gift(self.token, gift_id, text, text_parse_mode, text_entities, pay_for_upgrade=pay_for_upgrade,
                                                 chat_id=chat_id, user_id=user_id)
 
-    async def verify_user(self, user_id: int, custom_description: Optional[str]=None) -> bool:
+    async def verify_user(
+            self, user_id: int, custom_description: Optional[str]=None,
+            custom_description_parse_mode: Optional[str]=None,
+            custom_description_entities: Optional[List[types.MessageEntity]]=None) -> bool:
         """
         Verifies a user on behalf of the organization which is represented by the bot. Returns True on success.
 
@@ -9845,12 +9848,24 @@ class AsyncTeleBot:
         :param custom_description: Custom description for the verification; 0-70 characters. Must be empty if the organization isn't allowed to provide a custom verification description.
         :type custom_description: :obj:`str`
 
+        :param custom_description_parse_mode: Mode for parsing entities in the custom description. See formatting options for more details. Only “text_link” entities are supported.
+        :type custom_description_parse_mode: :obj:`str`
+
+        :param custom_description_entities: A JSON-serialized list of special entities that appear in the custom description, which can be specified instead of custom_description_parse_mode. Only “text_link” entities are supported.
+        :type custom_description_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
         :return: Returns True on success.
         :rtype: :obj:`bool`
         """
-        return await asyncio_helper.verify_user(self.token, user_id, custom_description=custom_description)
+        return await asyncio_helper.verify_user(
+            self.token, user_id, custom_description=custom_description,
+            custom_description_parse_mode=custom_description_parse_mode,
+            custom_description_entities=custom_description_entities)
 
-    async def verify_chat(self, chat_id: Union[int, str], custom_description: Optional[str]=None) -> bool:
+    async def verify_chat(
+            self, chat_id: Union[int, str], custom_description: Optional[str]=None,
+            custom_description_parse_mode: Optional[str]=None,
+            custom_description_entities: Optional[List[types.MessageEntity]]=None) -> bool:
         """
         Verifies a chat on behalf of the organization which is represented by the bot. Returns True on success.
 
@@ -9862,11 +9877,20 @@ class AsyncTeleBot:
         :param custom_description: Custom description for the verification; 0-70 characters. Must be empty if the organization isn't allowed to provide a custom verification description.
         :type custom_description: :obj:`str`
 
+        :param custom_description_parse_mode: Mode for parsing entities in the custom description. See formatting options for more details. Only “text_link” entities are supported.
+        :type custom_description_parse_mode: :obj:`str`
+
+        :param custom_description_entities: A JSON-serialized list of special entities that appear in the custom description, which can be specified instead of custom_description_parse_mode. Only “text_link” entities are supported.
+        :type custom_description_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
         :return: Returns True on success.
         :rtype: :obj:`bool`
         """
 
-        return await asyncio_helper.verify_chat(self.token, chat_id, custom_description=custom_description)
+        return await asyncio_helper.verify_chat(
+            self.token, chat_id, custom_description=custom_description,
+            custom_description_parse_mode=custom_description_parse_mode,
+            custom_description_entities=custom_description_entities)
 
     async def remove_user_verification(self, user_id: int) -> bool:
         """
@@ -10273,6 +10297,25 @@ class AsyncTeleBot:
         """
         return await asyncio_helper.convert_gift_to_stars(self.token, business_connection_id, owned_gift_id)
 
+    async def delete_business_account_gift(self, business_connection_id: str, owned_gift_id: str) -> bool:
+        """
+        Deletes a regular gift owned by a managed business account without receiving Telegram Stars for it.
+        Requires the can_convert_gifts_to_stars business bot right. The gift can be deleted only if it isn't limited
+        (the field total_count of the Gift is omitted) and wasn't refunded. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletebusinessaccountgift
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :param owned_gift_id: Unique identifier of the regular gift that should be deleted
+        :type owned_gift_id: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return await asyncio_helper.delete_business_account_gift(self.token, business_connection_id, owned_gift_id)
+
     async def upgrade_gift(
             self, business_connection_id: str, owned_gift_id: str,
             keep_original_details: Optional[bool]=None,
@@ -10590,6 +10633,32 @@ class AsyncTeleBot:
         """
 
         return types.Gifts.de_json(await asyncio_helper.get_available_gifts(self.token))
+
+    async def get_unique_gift(self, name: str) -> types.UniqueGift:
+        """
+        Use this method to get information about a unique gift by its name. Returns a UniqueGift object on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getuniquegift
+
+        :param name: Unique name of the gift
+        :type name: :obj:`str`
+
+        :return: On success, a UniqueGift object is returned.
+        :rtype: :class:`telebot.types.UniqueGift`
+        """
+        return types.UniqueGift.de_json(await asyncio_helper.get_unique_gift(self.token, name))
+
+    async def get_chat_share_theme_backdrops(self) -> types.ChatShareThemeBackdrops:
+        """
+        Use this method to get the list of backdrops, which can be used as the background of a theme of the screen
+        for sharing a link to a user or a chat. Requires no parameters. Returns a ChatShareThemeBackdrops object.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getchatsharethemebackdrops
+
+        :return: On success, a ChatShareThemeBackdrops object is returned.
+        :rtype: :class:`telebot.types.ChatShareThemeBackdrops`
+        """
+        return types.ChatShareThemeBackdrops.de_json(await asyncio_helper.get_chat_share_theme_backdrops(self.token))
 
 
     async def replace_sticker_in_set(self, user_id: int, name: str, old_sticker: str, sticker: types.InputSticker) -> bool:

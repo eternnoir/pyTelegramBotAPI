@@ -191,3 +191,69 @@ def test_async_widget_methods(monkeypatch):
     assert captured['url'] == 'answerWidgetQuery'
     assert captured['params'] == {'widget_query_id': 'q1', 'data': 'ok'}
     assert captured['method'] == 'post'
+
+
+def test_ephemeral_reply_without_chat_id(monkeypatch):
+    captured = {}
+    monkeypatch.setattr(apihelper, '_make_request', _capture(captured))
+    parameters = types.EphemeralMessageParameters(callback_query_id='q1')
+
+    apihelper.send_message('token', None, 'hi', ephemeral_message_parameters=parameters)
+    assert captured['params'] == {'text': 'hi', 'ephemeral_message_parameters': '{"callback_query_id": "q1"}'}
+
+    apihelper.send_data('token', None, 'file-id', 'document', ephemeral_message_parameters=parameters)
+    assert 'chat_id' not in captured['params']
+
+    apihelper.send_message('token', 1, 'hi')
+    assert captured['params']['chat_id'] == '1'
+
+
+def test_api_104_methods(monkeypatch):
+    captured = {}
+    monkeypatch.setattr(apihelper, '_make_request', _capture(captured))
+
+    apihelper.get_unique_gift('token', 'Cake-1')
+    assert captured['method_url'] == 'getUniqueGift'
+    assert captured['params'] == {'name': 'Cake-1'}
+
+    apihelper.get_chat_share_theme_backdrops('token')
+    assert captured['method_url'] == 'getChatShareThemeBackdrops'
+
+    apihelper.delete_business_account_gift('token', 'bc', 'g1')
+    assert captured['method_url'] == 'deleteBusinessAccountGift'
+    assert captured['params'] == {'business_connection_id': 'bc', 'owned_gift_id': 'g1'}
+
+    entity = types.MessageEntity('text_link', 0, 4, url='https://example.com')
+    apihelper.verify_user('token', 1, 'Team', custom_description_entities=[entity])
+    assert json.loads(captured['params']['custom_description_entities'])[0]['url'] == 'https://example.com'
+
+    apihelper.verify_chat('token', 1, 'Team', custom_description_parse_mode='HTML')
+    assert captured['params']['custom_description_parse_mode'] == 'HTML'
+
+
+def test_async_api_104_methods(monkeypatch):
+    captured = {}
+
+    async def fake_process_request(token, url, method='get', params=None, files=None, **kwargs):
+        captured.update(url=url, params=params, method=method)
+        return True
+
+    monkeypatch.setattr(asyncio_helper, '_process_request', fake_process_request)
+    parameters = types.EphemeralMessageParameters(callback_query_id='q1')
+
+    asyncio.run(asyncio_helper.send_message('token', None, 'hi', ephemeral_message_parameters=parameters))
+    assert 'chat_id' not in captured['params']
+
+    asyncio.run(asyncio_helper.send_photo('token', None, 'file-id', ephemeral_message_parameters=parameters))
+    assert 'chat_id' not in captured['params']
+
+    asyncio.run(asyncio_helper.get_unique_gift('token', 'Cake-1'))
+    assert captured['url'] == 'getUniqueGift'
+    assert captured['params'] == {'name': 'Cake-1'}
+
+    asyncio.run(asyncio_helper.delete_business_account_gift('token', 'bc', 'g1'))
+    assert captured['url'] == 'deleteBusinessAccountGift'
+    assert captured['method'] == 'post'
+
+    asyncio.run(asyncio_helper.verify_chat('token', 1, custom_description_parse_mode='HTML'))
+    assert captured['params'] == {'chat_id': 1, 'custom_description_parse_mode': 'HTML'}

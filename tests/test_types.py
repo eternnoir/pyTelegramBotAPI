@@ -194,6 +194,115 @@ def test_api_104_input_widget_message_contents():
     assert shared_widget.to_dict() == {'widget_id': 'w1', 'chat_data': 'c', 'caption': 'Counter'}
 
 
+def test_api_104_ephemeral_reply_without_receiver():
+    parameters = types.EphemeralMessageParameters(callback_query_id='query')
+
+    assert parameters.to_dict() == {'callback_query_id': 'query'}
+
+
+def test_api_104_quotes_from_rich_messages():
+    quote = types.TextQuote.de_json({
+        'text': '',
+        'position': 6,
+        'rich_texts': ['Hello ', {'type': 'bold', 'text': 'world'}],
+    })
+    reply_parameters = types.ReplyParameters(1, quote_rich_texts=['Hello ', types.RichTextBold('world')])
+
+    assert quote.text == ''
+    assert quote.rich_texts[0] == 'Hello '
+    assert isinstance(quote.rich_texts[1], types.RichTextBold)
+    assert reply_parameters.to_dict() == {
+        'message_id': 1,
+        'quote_rich_texts': ['Hello ', {'type': 'bold', 'text': 'world'}],
+    }
+    assert types.ReplyParameters.de_json(reply_parameters.to_json()).quote_rich_texts[1].text == 'world'
+
+
+def test_api_104_area_position():
+    position = {
+        'x_percentage': 50.0, 'y_percentage': 50.0, 'width_percentage': 20.0,
+        'height_percentage': 20.0, 'rotation_angle': 0.0, 'corner_radius_percentage': 0.0,
+    }
+    old_position = types.StoryAreaPosition(**position)
+
+    assert types.AreaPosition.de_json(position).to_dict() == position
+    assert isinstance(old_position, types.AreaPosition)
+    assert old_position.to_dict() == position
+
+
+def test_api_104_ton_wallet():
+    chat = types.ChatFullInfo.de_json({
+        'id': 1,
+        'type': 'private',
+        'ton_wallet_card': {'address': 'UQA', 'amount': '1000000000', 'stickers': []},
+    })
+    message = types.Message.de_json({
+        'message_id': 1,
+        'date': 1,
+        'chat': {'id': 1, 'type': 'private'},
+        'ton_wallet_transfer': {'transaction_id': 'tx', 'peer_address': 'UQB', 'amount': '-5', 'comment': 'Thanks'},
+    })
+
+    assert isinstance(chat.ton_wallet_card, types.TonWalletCard)
+    assert chat.ton_wallet_card.amount == '1000000000'
+    assert message.content_type == 'ton_wallet_transfer'
+    assert message.ton_wallet_transfer.peer_address == 'UQB'
+    assert message.ton_wallet_transfer.amount == '-5'
+    assert message.ton_wallet_transfer.comment == 'Thanks'
+
+
+def test_api_104_chat_share_themes():
+    chat = types.ChatFullInfo.de_json({
+        'id': 1,
+        'type': 'supergroup',
+        'share_theme': {
+            'type': 'emoji',
+            'emojis': [{'type': 'emoji', 'emoji': '🎉'}, {'type': 'custom_emoji', 'custom_emoji_id': '123'}],
+            'background_backdrop_id': 7,
+        },
+    })
+    gift_theme = types.ChatShareTheme.de_json({
+        'type': 'unique_gift',
+        'gift': {
+            'base_name': 'Cake', 'name': 'Cake-1', 'number': 1, 'gift_id': 'g1',
+            'model': {'name': 'm', 'sticker': None, 'rarity_per_mille': 1},
+            'symbol': {'name': 's', 'sticker': None, 'rarity_per_mille': 1},
+            'backdrop': {'name': 'b', 'colors': {
+                'center_color': 1, 'edge_color': 2, 'symbol_color': 3, 'text_color': 4}, 'rarity_per_mille': 1},
+        },
+    })
+    backdrops = types.ChatShareThemeBackdrops.de_json({'backdrops': [{
+        'id': 7, 'name': 'Sky', 'colors': {'center_color': 1, 'edge_color': 2, 'symbol_color': 3, 'text_color': 4},
+    }]})
+
+    theme = chat.share_theme
+    assert isinstance(theme, types.ChatShareThemeEmoji)
+    assert isinstance(theme.emojis[0], types.EmojiTypeEmoji)
+    assert theme.emojis[0].emoji == '🎉'
+    assert isinstance(theme.emojis[1], types.EmojiTypeCustomEmoji)
+    assert theme.emojis[1].custom_emoji_id == '123'
+    assert theme.background_backdrop_id == 7
+    assert isinstance(gift_theme, types.ChatShareThemeUniqueGift)
+    assert gift_theme.gift.name == 'Cake-1'
+    assert backdrops.backdrops[0].id == 7
+    assert backdrops.backdrops[0].colors.text_color == 4
+
+
+def test_api_104_general():
+    address = types.RichText.de_json({'type': 'ton_address', 'text': 'UQA...', 'address': 'UQA'})
+    message = types.Message.de_json({
+        'message_id': 1,
+        'date': 1,
+        'chat': {'id': 1, 'type': 'private'},
+        'paid_messages_waived': {},
+    })
+
+    assert isinstance(address, types.RichTextTonAddress)
+    assert address.to_dict() == {'type': 'ton_address', 'text': 'UQA...', 'address': 'UQA'}
+    assert message.content_type == 'paid_messages_waived'
+    assert isinstance(message.paid_messages_waived, types.PaidMessagesWaived)
+
+
 def test_json_user():
     json_str = r'{"id": 123456789, "is_bot": false, "first_name": "John", "last_name": "Doe", "username": "@johndoe", "language_code": "en", "can_join_groups": true, "can_read_all_group_messages": false, "supports_inline_queries": true, "is_premium": true, "added_to_attachment_menu": false, "can_connect_to_business": true, "has_main_web_app": false, "has_topics_enabled": true, "allows_users_to_create_topics": true, "can_manage_bots": true, "supports_guest_queries": true, "supports_join_request_queries": true}'
     result = types.User.de_json(json_str)
