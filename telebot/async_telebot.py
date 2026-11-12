@@ -4519,7 +4519,7 @@ class AsyncTeleBot:
         """
         Use this method to send an answer to a query from a widget. The query must be answered within 15 seconds.
         The answer is received only by the widget that sent the query and doesn't change data of the widget;
-        use edit_message_widget_data or edit_shared_widget_data to change it. On success, True is returned.
+        use editMessageWidgetData or editSharedWidgetData to change it. On success, True is returned.
 
         Telegram documentation: https://core.telegram.org/bots/api#answerwidgetquery
 
