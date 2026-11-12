@@ -4794,15 +4794,13 @@ class InputWidgetMessageContent(Dictionaryable):
     :param html: HTML code of the widget, 1-32768 bytes. The code must not exceed 4096 bytes when compressed by zlib with the maximum compression level.
     :type html: :obj:`str`
 
-    :param width: Optional. Width of the widget in logical pixels; omit if the widget must occupy the whole width of the message bubble.
-        The width is clamped by the app to the range from 200 to the maximum width of the message bubble.
+    :param width: Optional. Width of the widget in logical pixels; omit if the widget must occupy the whole width of the message bubble. The width is clamped by the app to the range from 200 to the maximum width of the message bubble.
     :type width: :obj:`int`
 
     :param height: Optional. Height of the widget in logical pixels; omit if the height of the widget isn't fixed. The height is clamped by the app to the range 50-600.
     :type height: :obj:`int`
 
-    :param public_data: Optional. Public data of the widget, 0-1024 bytes, which will be available wherever the widget is shown.
-        If the widget is shared, then all messages with it will have the same public data.
+    :param public_data: Optional. Public data of the widget, 0-1024 bytes, which will be available wherever the widget is shown. If the widget is shared, then all messages with it will have the same public data.
     :type public_data: :obj:`str`
 
     :param chat_data: Optional. Data of the widget, which is specific to the message, 0-1024 bytes
@@ -4823,9 +4821,7 @@ class InputWidgetMessageContent(Dictionaryable):
     :param allow_queries: Optional. Pass True to allow the widget to send queries to the bot
     :type allow_queries: :obj:`bool`
 
-    :param is_shared: Optional. Pass True to create a shared widget. Each message sent from the result creates a separate shared widget,
-        whose identifier is received by the bot only in the field widget_id of queries from the widget.
-        To send an existing shared widget in response to an inline query, use InputSharedWidgetMessageContent instead.
+    :param is_shared: Optional. Pass True to create a shared widget. Each message sent from the result creates a separate shared widget, whose identifier is received by the bot only in the field widget_id of queries from the widget. To send an existing shared widget in response to an inline query, use InputSharedWidgetMessageContent instead.
     :type is_shared: :obj:`bool`
 
     :return: Instance of the class
@@ -18338,8 +18334,7 @@ class Widget(JsonDeserializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#widget
 
-    :param id: Optional. Unique identifier of the shared widget, which can be used to send the widget again using the method sendSharedWidget;
-        omitted if the widget isn't shared
+    :param id: Optional. Unique identifier of the shared widget, which can be used to send the widget again using the method sendSharedWidget; omitted if the widget isn't shared
     :type id: :obj:`str`
 
     :param width: Optional. Width of the widget in logical pixels; omitted if the widget must occupy the whole width of the message bubble
@@ -18351,8 +18346,7 @@ class Widget(JsonDeserializable):
     :param html: HTML code of the widget
     :type html: :obj:`str`
 
-    :param public_data: Optional. Public data of the widget, which is available wherever the widget is shown.
-        All messages with a shared widget have the same public data.
+    :param public_data: Optional. Public data of the widget, which is available wherever the widget is shown. All messages with a shared widget have the same public data.
     :type public_data: :obj:`str`
 
     :param chat_data: Optional. Data of the widget, which is specific to the message
@@ -18402,8 +18396,7 @@ class WidgetQuery(JsonDeserializable):
     :param chat_instance: Global identifier, uniquely corresponding to the chat to which the message with the widget was sent
     :type chat_instance: :obj:`str`
 
-    :param chat_type: Optional. For widgets in inline messages, type of the chat to which the message was sent.
-        Can be either “sender” for a private chat with the inline query sender, “private”, “group”, “supergroup”, or “channel”.
+    :param chat_type: Optional. For widgets in inline messages, type of the chat to which the message was sent. Can be either “sender” for a private chat with the inline query sender, “private”, “group”, “supergroup”, or “channel”.
     :type chat_type: :obj:`str`
 
     :param type: Type of the query
@@ -18653,8 +18646,7 @@ class TonWalletCard(JsonDeserializable):
     :param stickers: Stickers placed on the card
     :type stickers: :obj:`list` of :class:`telebot.types.TonWalletCardSticker`
 
-    :param background_nft_address: Optional. Address of the NFT of one of the stickers, whose colors must be used for the card background;
-        omitted if the default background must be used
+    :param background_nft_address: Optional. Address of the NFT of one of the stickers, whose colors must be used for the card background; omitted if the default background must be used
     :type background_nft_address: :obj:`str`
 
     :return: Instance of the class
