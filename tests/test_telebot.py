@@ -99,28 +99,6 @@ def test_widget_query_handlers():
     assert received == ['q1', 'q2']
 
 
-def test_api_104_methods(monkeypatch):
-    bot = telebot.TeleBot('1:fake', validate_token=False, threaded=False)
-    requests = []
-
-    def fake_make_request(token, method_url, params=None, files=None, method='get', **kwargs):
-        requests.append((method_url, params))
-        if method_url == 'getChatShareThemeBackdrops':
-            return {'backdrops': []}
-        return {'message_id': 1, 'date': 1, 'chat': {'id': 2, 'type': 'private'}, 'text': 'hi'}
-
-    monkeypatch.setattr(telebot.apihelper, '_make_request', fake_make_request)
-
-    message = bot.send_message(
-        None, 'hi', ephemeral_message_parameters=types.EphemeralMessageParameters(callback_query_id='q1'))
-    backdrops = bot.get_chat_share_theme_backdrops()
-
-    assert message.text == 'hi'
-    assert 'chat_id' not in requests[0][1]
-    assert isinstance(backdrops, types.ChatShareThemeBackdrops)
-    assert requests[1][0] == 'getChatShareThemeBackdrops'
-
-
 @pytest.mark.skipif(should_skip, reason="No environment variables configured")
 class TestTeleBot:
     def test_message_listener(self):

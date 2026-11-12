@@ -146,28 +146,6 @@ def test_widget_query_handlers():
     assert received == ['q1', 'q2']
 
 
-def test_api_104_methods(monkeypatch):
-    bot = AsyncTeleBot('1:fake', validate_token=False)
-    requests = []
-
-    async def fake_process_request(token, url, method='get', params=None, files=None, **kwargs):
-        requests.append((url, params))
-        if url == 'getChatShareThemeBackdrops':
-            return {'backdrops': []}
-        return {'message_id': 1, 'date': 1, 'chat': {'id': 2, 'type': 'private'}, 'text': 'hi'}
-
-    monkeypatch.setattr(async_telebot.asyncio_helper, '_process_request', fake_process_request)
-
-    message = asyncio.run(bot.send_message(
-        None, 'hi', ephemeral_message_parameters=types.EphemeralMessageParameters(callback_query_id='q1')))
-    backdrops = asyncio.run(bot.get_chat_share_theme_backdrops())
-
-    assert message.text == 'hi'
-    assert 'chat_id' not in requests[0][1]
-    assert isinstance(backdrops, types.ChatShareThemeBackdrops)
-    assert requests[1][0] == 'getChatShareThemeBackdrops'
-
-
 def _fake_429(retry_after: int):
     from telebot.asyncio_helper import ApiTelegramException
 

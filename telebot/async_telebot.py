@@ -9848,10 +9848,10 @@ class AsyncTeleBot:
         :param custom_description: Custom description for the verification; 0-70 characters. Must be empty if the organization isn't allowed to provide a custom verification description.
         :type custom_description: :obj:`str`
 
-        :param custom_description_parse_mode: Mode for parsing entities in the custom description. See formatting options for more details. Only “text_link” entities are supported.
+        :param custom_description_parse_mode: Optional. Mode for parsing entities in the custom description. See formatting options for more details. Only “text_link” entities are supported.
         :type custom_description_parse_mode: :obj:`str`
 
-        :param custom_description_entities: A JSON-serialized list of special entities that appear in the custom description, which can be specified instead of custom_description_parse_mode. Only “text_link” entities are supported.
+        :param custom_description_entities: Optional. A JSON-serialized list of special entities that appear in the custom description, which can be specified instead of custom_description_parse_mode. Only “text_link” entities are supported.
         :type custom_description_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
         :return: Returns True on success.
@@ -9877,10 +9877,10 @@ class AsyncTeleBot:
         :param custom_description: Custom description for the verification; 0-70 characters. Must be empty if the organization isn't allowed to provide a custom verification description.
         :type custom_description: :obj:`str`
 
-        :param custom_description_parse_mode: Mode for parsing entities in the custom description. See formatting options for more details. Only “text_link” entities are supported.
+        :param custom_description_parse_mode: Optional. Mode for parsing entities in the custom description. See formatting options for more details. Only “text_link” entities are supported.
         :type custom_description_parse_mode: :obj:`str`
 
-        :param custom_description_entities: A JSON-serialized list of special entities that appear in the custom description, which can be specified instead of custom_description_parse_mode. Only “text_link” entities are supported.
+        :param custom_description_entities: Optional. A JSON-serialized list of special entities that appear in the custom description, which can be specified instead of custom_description_parse_mode. Only “text_link” entities are supported.
         :type custom_description_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
         :return: Returns True on success.

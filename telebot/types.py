@@ -18784,8 +18784,7 @@ class TonWalletTransfer(JsonDeserializable):
     :param peer_address: Address of the transfer peer in the TON blockchain
     :type peer_address: :obj:`str`
 
-    :param amount: The amount of transferred cryptocurrency, in the smallest units of the cryptocurrency, as a decimal number;
-        negative for outgoing transfers
+    :param amount: The amount of transferred cryptocurrency, in the smallest units of the cryptocurrency, as a decimal number; negative for outgoing transfers
     :type amount: :obj:`str`
 
     :param comment: Optional. Comment added to the transfer; omitted if the comment is encrypted
@@ -18940,8 +18939,7 @@ class ChatShareThemeEmoji(ChatShareTheme):
     :param emojis: The emoji; 0-6 regular or custom emoji
     :type emojis: :obj:`list` of :class:`telebot.types.EmojiType`
 
-    :param background_backdrop_id: Optional. Identifier of the backdrop used as the background; omitted if the default background is used.
-        Use getChatShareThemeBackdrops to get details about the backdrop.
+    :param background_backdrop_id: Optional. Identifier of the backdrop used as the background; omitted if the default background is used. Use getChatShareThemeBackdrops to get details about the backdrop.
     :type background_backdrop_id: :obj:`int`
 
     :return: Instance of the class
