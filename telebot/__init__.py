@@ -252,6 +252,8 @@ class TeleBot:
         self.guest_message_handlers = []
         self.subscription_handlers = []
         self.stopped_message_generation_handlers = []
+        self.widget_query_handlers = []
+        self.shared_widget_query_handlers = []
 
         self.custom_filters = {}
         self.state_handlers = []
@@ -287,6 +289,8 @@ class TeleBot:
                 'guest_message': [],
                 'subscription': [],
                 'stopped_message_generation': [],
+                'widget_query': [],
+                'shared_widget_query': [],
             }
             self.default_middleware_handlers = []
         if apihelper.ENABLE_MIDDLEWARE and use_class_middlewares:
@@ -738,6 +742,8 @@ class TeleBot:
         new_guest_messages = None
         new_subscriptions = None
         new_stopped_message_generations = None
+        new_widget_queries = None
+        new_shared_widget_queries = None
 
         for update in updates:
             if apihelper.ENABLE_MIDDLEWARE and not self.use_class_middlewares:
@@ -834,6 +840,12 @@ class TeleBot:
             if update.stopped_message_generation:
                 if new_stopped_message_generations is None: new_stopped_message_generations = []
                 new_stopped_message_generations.append(update.stopped_message_generation)
+            if update.widget_query:
+                if new_widget_queries is None: new_widget_queries = []
+                new_widget_queries.append(update.widget_query)
+            if update.shared_widget_query:
+                if new_shared_widget_queries is None: new_shared_widget_queries = []
+                new_shared_widget_queries.append(update.shared_widget_query)
 
         if new_messages:
             self.process_new_messages(new_messages)
@@ -889,6 +901,10 @@ class TeleBot:
             self.process_new_managed_bot(new_managed_bots)
         if new_guest_messages:
             self.process_new_guest_message(new_guest_messages)
+        if new_widget_queries:
+            self.process_new_widget_query(new_widget_queries)
+        if new_shared_widget_queries:
+            self.process_new_shared_widget_query(new_shared_widget_queries)
 
     def process_new_messages(self, new_messages):
         """
@@ -1058,6 +1074,18 @@ class TeleBot:
             new_stopped_message_generations,
             'stopped_message_generation',
         )
+
+    def process_new_widget_query(self, new_widget_queries):
+        """
+        :meta private:
+        """
+        self._notify_command_handlers(self.widget_query_handlers, new_widget_queries, 'widget_query')
+
+    def process_new_shared_widget_query(self, new_shared_widget_queries):
+        """
+        :meta private:
+        """
+        self._notify_command_handlers(self.shared_widget_query_handlers, new_shared_widget_queries, 'shared_widget_query')
 
     def process_middlewares(self, update):
         """
@@ -1783,7 +1811,7 @@ class TeleBot:
 
 
     def send_message(
-            self, chat_id: Union[int, str], text: str,
+            self, chat_id: Optional[Union[int, str]], text: str,
             parse_mode: Optional[str]=None,
             entities: Optional[List[types.MessageEntity]]=None,
             disable_web_page_preview: Optional[bool]=None,    # deprecated, for backward compatibility
@@ -1813,7 +1841,7 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendmessage
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param text: Text of the message to be sent
@@ -2031,7 +2059,7 @@ class TeleBot:
             message_effect_id: Optional[str]=None) -> types.MessageId:
         """
         Use this method to copy messages of any kind.
-        Service messages, paid media messages, giveaway messages, giveaway winners messages, and invoice messages can't be copied.
+        Service messages, paid media messages, giveaway messages, giveaway winners messages, invoice messages, and widget messages can't be copied.
         A quiz poll can be copied only if the value of the field correct_option_id is known to the bot. The method is analogous to the method
         forwardMessage, but the copied message doesn't have a link to the original message. Returns the MessageId of the sent message on success.
 
@@ -2331,7 +2359,7 @@ class TeleBot:
         """
         Use this method to copy messages of any kind.
         If some of the specified messages can't be found or copied, they are skipped. Service messages, paid media messages, giveaway messages, giveaway winners messages,
-        and invoice messages can't be copied. A quiz poll can be copied only if the value of the field correct_option_id is known to the bot. The method is analogous
+        invoice messages, and widget messages can't be copied. A quiz poll can be copied only if the value of the field correct_option_id is known to the bot. The method is analogous
         to the method forwardMessages, but the copied messages don't have a link to the original message. Album grouping is kept for copied messages. On success, an array
         of MessageId of the sent messages is returned.
 
@@ -2460,6 +2488,279 @@ class TeleBot:
             apihelper.edit_message_checklist(
                 self.token, business_connection_id, chat_id, message_id, checklist, reply_markup=reply_markup))
 
+    def send_widget(
+            self, chat_id: Union[int, str], html: str,
+            message_thread_id: Optional[int]=None,
+            width: Optional[int]=None,
+            height: Optional[int]=None,
+            public_data: Optional[str]=None,
+            chat_data: Optional[str]=None,
+            caption: Optional[str]=None,
+            parse_mode: Optional[str]=None,
+            caption_entities: Optional[List[types.MessageEntity]]=None,
+            show_caption_above_media: Optional[bool]=None,
+            allow_queries: Optional[bool]=None,
+            is_shared: Optional[bool]=None,
+            disable_notification: Optional[bool]=None,
+            protect_content: Optional[bool]=None,
+            allow_paid_broadcast: Optional[bool]=None,
+            message_effect_id: Optional[str]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> types.Message:
+        """
+        Use this method to send a message with an HTML widget. Currently, in the production environment, widgets can be sent
+        only to private chats, and sent widgets automatically have protected content and therefore can't be forwarded.
+        On success, the sent Message is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendwidget
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup in the format @username
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param html: HTML code of the widget, 1-32768 bytes. The code must not exceed 4096 bytes when compressed by zlib
+            with the maximum compression level.
+        :type html: :obj:`str`
+
+        :param message_thread_id: Unique identifier for the target message thread (topic) of a forum; for forum supergroups
+            and private chats of bots with forum topic mode enabled only
+        :type message_thread_id: :obj:`int`
+
+        :param width: Width of the widget in logical pixels; omit if the widget must occupy the whole width of the message bubble.
+            The width is clamped by the app to the range from 200 to the maximum width of the message bubble.
+        :type width: :obj:`int`
+
+        :param height: Height of the widget in logical pixels; omit if the height of the widget isn't fixed.
+            The height is clamped by the app to the range 50-600.
+        :type height: :obj:`int`
+
+        :param public_data: Public data of the widget, 0-1024 bytes, which will be available wherever the widget is shown.
+            If the widget is shared, then all messages with it will have the same public data.
+        :type public_data: :obj:`str`
+
+        :param chat_data: Data of the widget, which is specific to the message, 0-1024 bytes
+        :type chat_data: :obj:`str`
+
+        :param caption: Widget caption, 0-1024 characters after entities parsing
+        :type caption: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the widget caption
+        :type parse_mode: :obj:`str`
+
+        :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+        :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+        :param show_caption_above_media: Pass True if the caption must be shown above the widget
+        :type show_caption_above_media: :obj:`bool`
+
+        :param allow_queries: Pass True to allow the widget to send queries to the bot
+        :type allow_queries: :obj:`bool`
+
+        :param is_shared: Pass True to create a shared widget, which can be sent again using the method sendSharedWidget
+        :type is_shared: :obj:`bool`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :param allow_paid_broadcast: Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee
+            of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
+        :type allow_paid_broadcast: :obj:`bool`
+
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
+        :param reply_parameters: Description of the message to reply to
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions
+            to remove reply keyboard or to force a reply from the user.
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
+        """
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+
+        if reply_parameters and (reply_parameters.allow_sending_without_reply is None):
+            reply_parameters.allow_sending_without_reply = self.allow_sending_without_reply
+
+        return types.Message.de_json(
+            apihelper.send_widget(
+                self.token, chat_id, html, message_thread_id=message_thread_id, width=width, height=height,
+                public_data=public_data, chat_data=chat_data, caption=caption, parse_mode=parse_mode,
+                caption_entities=caption_entities, show_caption_above_media=show_caption_above_media,
+                allow_queries=allow_queries, is_shared=is_shared, disable_notification=disable_notification,
+                protect_content=protect_content, allow_paid_broadcast=allow_paid_broadcast,
+                message_effect_id=message_effect_id, reply_parameters=reply_parameters, reply_markup=reply_markup))
+
+    def send_shared_widget(
+            self, chat_id: Union[int, str], widget_id: str,
+            message_thread_id: Optional[int]=None,
+            chat_data: Optional[str]=None,
+            caption: Optional[str]=None,
+            parse_mode: Optional[str]=None,
+            caption_entities: Optional[List[types.MessageEntity]]=None,
+            show_caption_above_media: Optional[bool]=None,
+            disable_notification: Optional[bool]=None,
+            protect_content: Optional[bool]=None,
+            allow_paid_broadcast: Optional[bool]=None,
+            message_effect_id: Optional[str]=None,
+            reply_parameters: Optional[types.ReplyParameters]=None,
+            reply_markup: Optional[REPLY_MARKUP_TYPES]=None) -> types.Message:
+        """
+        Use this method to send again a shared widget created by the bot. Currently, in the production environment, widgets can be sent
+        only to private chats, and sent widgets automatically have protected content and therefore can't be forwarded.
+        On success, the sent Message is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#sendsharedwidget
+
+        :param chat_id: Unique identifier for the target chat or username of the target supergroup in the format @username
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param widget_id: Unique identifier of the shared widget
+        :type widget_id: :obj:`str`
+
+        :param message_thread_id: Unique identifier for the target message thread (topic) of a forum; for forum supergroups
+            and private chats of bots with forum topic mode enabled only
+        :type message_thread_id: :obj:`int`
+
+        :param chat_data: Data of the widget, which is specific to the message, 0-1024 bytes
+        :type chat_data: :obj:`str`
+
+        :param caption: Widget caption, 0-1024 characters after entities parsing
+        :type caption: :obj:`str`
+
+        :param parse_mode: Mode for parsing entities in the widget caption
+        :type parse_mode: :obj:`str`
+
+        :param caption_entities: A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
+        :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+        :param show_caption_above_media: Pass True if the caption must be shown above the widget
+        :type show_caption_above_media: :obj:`bool`
+
+        :param disable_notification: Sends the message silently. Users will receive a notification with no sound.
+        :type disable_notification: :obj:`bool`
+
+        :param protect_content: Protects the contents of the sent message from forwarding and saving
+        :type protect_content: :obj:`bool`
+
+        :param allow_paid_broadcast: Pass True to allow up to 1000 messages per second, ignoring broadcasting limits for a fee
+            of 0.1 Telegram Stars per message. The relevant Stars will be withdrawn from the bot's balance
+        :type allow_paid_broadcast: :obj:`bool`
+
+        :param message_effect_id: Unique identifier of the message effect to be added to the message; for private chats only
+        :type message_effect_id: :obj:`str`
+
+        :param reply_parameters: Description of the message to reply to
+        :type reply_parameters: :class:`telebot.types.ReplyParameters`
+
+        :param reply_markup: Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions
+            to remove reply keyboard or to force a reply from the user.
+        :type reply_markup: :class:`telebot.types.InlineKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardMarkup` or :class:`telebot.types.ReplyKeyboardRemove`
+            or :class:`telebot.types.ForceReply`
+
+        :return: On success, the sent Message is returned.
+        :rtype: :class:`telebot.types.Message`
+        """
+        parse_mode = self.parse_mode if (parse_mode is None) else parse_mode
+        disable_notification = self.disable_notification if (disable_notification is None) else disable_notification
+        protect_content = self.protect_content if (protect_content is None) else protect_content
+
+        if reply_parameters and (reply_parameters.allow_sending_without_reply is None):
+            reply_parameters.allow_sending_without_reply = self.allow_sending_without_reply
+
+        return types.Message.de_json(
+            apihelper.send_shared_widget(
+                self.token, chat_id, widget_id, message_thread_id=message_thread_id, chat_data=chat_data,
+                caption=caption, parse_mode=parse_mode, caption_entities=caption_entities,
+                show_caption_above_media=show_caption_above_media, disable_notification=disable_notification,
+                protect_content=protect_content, allow_paid_broadcast=allow_paid_broadcast,
+                message_effect_id=message_effect_id, reply_parameters=reply_parameters, reply_markup=reply_markup))
+
+    def answer_widget_query(self, widget_query_id: str, data: Optional[str]=None) -> bool:
+        """
+        Use this method to send an answer to a query from a widget. The query must be answered within 15 seconds.
+        The answer is received only by the widget that sent the query and doesn't change data of the widget;
+        use editMessageWidgetData or editSharedWidgetData to change it. On success, True is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#answerwidgetquery
+
+        :param widget_query_id: Unique identifier for the query to be answered
+        :type widget_query_id: :obj:`str`
+
+        :param data: Data to be returned to the widget, 0-1024 bytes
+        :type data: :obj:`str`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.answer_widget_query(self.token, widget_query_id, data=data)
+
+    def edit_message_widget_data(
+            self, chat_id: Optional[Union[int, str]]=None,
+            message_id: Optional[int]=None,
+            inline_message_id: Optional[str]=None,
+            public_data: Optional[str]=None,
+            chat_data: Optional[str]=None) -> bool:
+        """
+        Use this method to edit data of a widget in a message sent by the bot or via the bot (for inline bots).
+        Public data of a shared widget can be changed at most once per second. On success, True is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editmessagewidgetdata
+
+        :param chat_id: Required if inline_message_id is not specified. Unique identifier for the target chat or username
+            of the target supergroup in the format @username.
+        :type chat_id: :obj:`int` or :obj:`str`
+
+        :param message_id: Required if inline_message_id is not specified. Identifier of the message with the widget.
+        :type message_id: :obj:`int`
+
+        :param inline_message_id: Required if chat_id and message_id are not specified. Identifier of the inline message.
+        :type inline_message_id: :obj:`str`
+
+        :param public_data: New public data of the widget, 0-1024 bytes; pass an empty string to remove the public data.
+            If omitted, then the public data isn't changed.
+        :type public_data: :obj:`str`
+
+        :param chat_data: New data of the widget, which is specific to the message, 0-1024 bytes; pass an empty string to remove the data.
+            If omitted, then the data isn't changed.
+        :type chat_data: :obj:`str`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.edit_message_widget_data(
+            self.token, chat_id=chat_id, message_id=message_id, inline_message_id=inline_message_id,
+            public_data=public_data, chat_data=chat_data)
+
+    def edit_shared_widget_data(self, widget_id: str, public_data: str, cache_time: Optional[int]=None) -> bool:
+        """
+        Use this method to edit public data of a shared widget created by the bot. A shared widget can be edited
+        at most once per second. On success, True is returned.
+
+        Telegram documentation: https://core.telegram.org/bots/api#editsharedwidgetdata
+
+        :param widget_id: Unique identifier of the shared widget
+        :type widget_id: :obj:`str`
+
+        :param public_data: New public data of the widget, 0-1024 bytes; pass an empty string to remove the public data
+        :type public_data: :obj:`str`
+
+        :param cache_time: The maximum amount of time in seconds that the public data of the widget may be cached client-side; 5-3600.
+            If omitted, then the current value is kept, which is 30 by default.
+        :type cache_time: :obj:`int`
+
+        :return: On success, True is returned.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.edit_shared_widget_data(self.token, widget_id, public_data, cache_time=cache_time)
+
     def send_dice(
             self, chat_id: Union[int, str],
             emoji: Optional[str]=None, disable_notification: Optional[bool]=None,
@@ -2569,7 +2870,7 @@ class TeleBot:
 
 
     def send_photo(
-            self, chat_id: Union[int, str], photo: Union[Any, str],
+            self, chat_id: Optional[Union[int, str]], photo: Union[Any, str],
             caption: Optional[str]=None, parse_mode: Optional[str]=None,
             caption_entities: Optional[List[types.MessageEntity]]=None,
             disable_notification: Optional[bool]=None,
@@ -2595,7 +2896,7 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendphoto
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param photo: Photo to send. Pass a file_id as String to send a photo that exists on the Telegram servers (recommended),
@@ -2714,7 +3015,7 @@ class TeleBot:
         )
     
     def send_live_photo(
-            self, chat_id: Union[int, str], live_photo: Union[Any, str], photo: Union[Any, str],
+            self, chat_id: Optional[Union[int, str]], live_photo: Union[Any, str], photo: Union[Any, str],
             message_thread_id: Optional[int]=None, direct_messages_topic_id: Optional[int]=None,
             business_connection_id: Optional[str]=None,
             caption: Optional[str]=None, parse_mode: Optional[str]=None,
@@ -2738,7 +3039,7 @@ class TeleBot:
         :param business_connection_id: Unique identifier of the business connection on behalf of which the message will be sent
         :type business_connection_id: :obj:`str`
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param live_photo: Live photo video to send. The video must be no longer than 10 seconds and must not exceed 10 MB in size.
@@ -2815,7 +3116,7 @@ class TeleBot:
 
 
     def send_audio(
-            self, chat_id: Union[int, str], audio: Union[Any, str],
+            self, chat_id: Optional[Union[int, str]], audio: Union[Any, str],
             caption: Optional[str]=None, duration: Optional[int]=None,
             performer: Optional[str]=None, title: Optional[str]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
@@ -2847,7 +3148,7 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendaudio
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param audio: Audio file to send. Pass a file_id as String to send an audio file that exists on the Telegram servers (recommended),
@@ -2980,7 +3281,7 @@ class TeleBot:
         )
 
     def send_voice(
-            self, chat_id: Union[int, str], voice: Union[Any, str],
+            self, chat_id: Optional[Union[int, str]], voice: Union[Any, str],
             caption: Optional[str]=None, duration: Optional[int]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
@@ -3005,7 +3306,7 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendvoice
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param voice: Audio file to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended),
@@ -3118,7 +3419,7 @@ class TeleBot:
 
 
     def send_document(
-            self, chat_id: Union[int, str], document: Union[Any, str],
+            self, chat_id: Optional[Union[int, str]], document: Union[Any, str],
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
             caption: Optional[str]=None,
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
@@ -3147,7 +3448,7 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#senddocument
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param document: (document) File to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL as a
@@ -3286,7 +3587,7 @@ class TeleBot:
 
 
     def send_sticker(
-            self, chat_id: Union[int, str],
+            self, chat_id: Optional[Union[int, str]],
             sticker: Union[Any, str],
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
             reply_markup: Optional[REPLY_MARKUP_TYPES]=None,
@@ -3312,7 +3613,7 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendsticker
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param sticker: Sticker to send. Pass a file_id as String to send a file that exists on the Telegram servers (recommended), pass an HTTP URL
@@ -3424,7 +3725,7 @@ class TeleBot:
 
 
     def send_video(
-            self, chat_id: Union[int, str], video: Union[Any, str],
+            self, chat_id: Optional[Union[int, str]], video: Union[Any, str],
             duration: Optional[int]=None,
             width: Optional[int]=None,
             height: Optional[int]=None,
@@ -3460,7 +3761,7 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendvideo
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param video: Video to send. You can either pass a file_id as String to resend a video that is already on the Telegram servers, or upload a new video file using multipart/form-data.
@@ -3617,7 +3918,7 @@ class TeleBot:
 
 
     def send_animation(
-            self, chat_id: Union[int, str], animation: Union[Any, str],
+            self, chat_id: Optional[Union[int, str]], animation: Union[Any, str],
             duration: Optional[int]=None,
             width: Optional[int]=None,
             height: Optional[int]=None,
@@ -3650,7 +3951,7 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendanimation
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param animation: Animation to send. Pass a file_id as String to send an animation that exists on the Telegram servers (recommended),
@@ -3790,7 +4091,7 @@ class TeleBot:
 
 
     def send_video_note(
-            self, chat_id: Union[int, str], data: Union[Any, str],
+            self, chat_id: Optional[Union[int, str]], data: Union[Any, str],
             duration: Optional[int]=None,
             length: Optional[int]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
@@ -3817,7 +4118,7 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendvideonote
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param data: Video note to send. Pass a file_id as String to send a video note that exists on the Telegram servers (recommended)
@@ -4118,7 +4419,7 @@ class TeleBot:
 
 
     def send_location(
-            self, chat_id: Union[int, str],
+            self, chat_id: Optional[Union[int, str]],
             latitude: float, longitude: float,
             live_period: Optional[int]=None,
             reply_to_message_id: Optional[int]=None,          # deprecated, for backward compatibility
@@ -4145,7 +4446,7 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendlocation
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param latitude: Latitude of the location
@@ -4369,7 +4670,7 @@ class TeleBot:
 
 
     def send_venue(
-            self, chat_id: Union[int, str],
+            self, chat_id: Optional[Union[int, str]],
             latitude: Optional[float], longitude: Optional[float],
             title: str, address: str,
             foursquare_id: Optional[str]=None,
@@ -4397,7 +4698,7 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendvenue
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param latitude: Latitude of the venue
@@ -4518,7 +4819,7 @@ class TeleBot:
 
 
     def send_contact(
-            self, chat_id: Union[int, str], phone_number: str,
+            self, chat_id: Optional[Union[int, str]], phone_number: str,
             first_name: str, last_name: Optional[str]=None,
             vcard: Optional[str]=None,
             disable_notification: Optional[bool]=None,
@@ -4541,7 +4842,7 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendcontact
 
-        :param chat_id: Unique identifier for the target chat or username of the target channel
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param phone_number: Contact's phone number
@@ -4694,7 +4995,7 @@ class TeleBot:
 
 
     def send_rich_message(
-            self, chat_id: Union[int, str],
+            self, chat_id: Optional[Union[int, str]],
             rich_message: types.InputRichMessage,
             business_connection_id: Optional[str]=None,
             message_thread_id: Optional[int]=None,
@@ -4713,7 +5014,7 @@ class TeleBot:
 
         Telegram documentation: https://core.telegram.org/bots/api#sendrichmessage
 
-        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup or channel in the format @username
+        :param chat_id: Unique identifier for the target chat or username of the target bot, supergroup, or channel in the format @username; required unless the message is sent as an ephemeral reply to a callback query
         :type chat_id: :obj:`int` or :obj:`str`
 
         :param rich_message: The message to be sent
@@ -7732,7 +8033,10 @@ class TeleBot:
         return apihelper.send_gift(self.token, gift_id, text=text, text_parse_mode=text_parse_mode, text_entities=text_entities,
                                       pay_for_upgrade=pay_for_upgrade, chat_id=chat_id, user_id=user_id)
 
-    def verify_user(self, user_id: int, custom_description: Optional[str]=None) -> bool:
+    def verify_user(
+            self, user_id: int, custom_description: Optional[str]=None,
+            custom_description_parse_mode: Optional[str]=None,
+            custom_description_entities: Optional[List[types.MessageEntity]]=None) -> bool:
         """
         Verifies a user on behalf of the organization which is represented by the bot. Returns True on success.
 
@@ -7744,12 +8048,24 @@ class TeleBot:
         :param custom_description: Custom description for the verification; 0-70 characters. Must be empty if the organization isn't allowed to provide a custom verification description.
         :type custom_description: :obj:`str`
 
+        :param custom_description_parse_mode: Optional. Mode for parsing entities in the custom description. See formatting options for more details. Only “text_link” entities are supported.
+        :type custom_description_parse_mode: :obj:`str`
+
+        :param custom_description_entities: Optional. A JSON-serialized list of special entities that appear in the custom description, which can be specified instead of custom_description_parse_mode. Only “text_link” entities are supported.
+        :type custom_description_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
         :return: Returns True on success.
         :rtype: :obj:`bool`
         """
-        return apihelper.verify_user(self.token, user_id, custom_description=custom_description)
+        return apihelper.verify_user(
+            self.token, user_id, custom_description=custom_description,
+            custom_description_parse_mode=custom_description_parse_mode,
+            custom_description_entities=custom_description_entities)
 
-    def verify_chat(self, chat_id: Union[int, str], custom_description: Optional[str]=None) -> bool:
+    def verify_chat(
+            self, chat_id: Union[int, str], custom_description: Optional[str]=None,
+            custom_description_parse_mode: Optional[str]=None,
+            custom_description_entities: Optional[List[types.MessageEntity]]=None) -> bool:
         """
         Verifies a chat on behalf of the organization which is represented by the bot. Returns True on success.
 
@@ -7761,10 +8077,19 @@ class TeleBot:
         :param custom_description: Custom description for the verification; 0-70 characters. Must be empty if the organization isn't allowed to provide a custom verification description.
         :type custom_description: :obj:`str`
 
+        :param custom_description_parse_mode: Optional. Mode for parsing entities in the custom description. See formatting options for more details. Only “text_link” entities are supported.
+        :type custom_description_parse_mode: :obj:`str`
+
+        :param custom_description_entities: Optional. A JSON-serialized list of special entities that appear in the custom description, which can be specified instead of custom_description_parse_mode. Only “text_link” entities are supported.
+        :type custom_description_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
         :return: Returns True on success.
         :rtype: :obj:`bool`
         """
-        return apihelper.verify_chat(self.token, chat_id, custom_description=custom_description)
+        return apihelper.verify_chat(
+            self.token, chat_id, custom_description=custom_description,
+            custom_description_parse_mode=custom_description_parse_mode,
+            custom_description_entities=custom_description_entities)
 
     def remove_user_verification(self, user_id: int) -> bool:
         """
@@ -8172,6 +8497,25 @@ class TeleBot:
         """
         return apihelper.convert_gift_to_stars(self.token, business_connection_id, owned_gift_id)
 
+    def delete_business_account_gift(self, business_connection_id: str, owned_gift_id: str) -> bool:
+        """
+        Deletes a regular gift owned by a managed business account without receiving Telegram Stars for it.
+        Requires the can_convert_gifts_to_stars business bot right. The gift can be deleted only if it isn't limited
+        (the field total_count of the Gift is omitted) and wasn't refunded. Returns True on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#deletebusinessaccountgift
+
+        :param business_connection_id: Unique identifier of the business connection
+        :type business_connection_id: :obj:`str`
+
+        :param owned_gift_id: Unique identifier of the regular gift that should be deleted
+        :type owned_gift_id: :obj:`str`
+
+        :return: Returns True on success.
+        :rtype: :obj:`bool`
+        """
+        return apihelper.delete_business_account_gift(self.token, business_connection_id, owned_gift_id)
+
     def upgrade_gift(
             self, business_connection_id: str, owned_gift_id: str,
             keep_original_details: Optional[bool]=None,
@@ -8489,6 +8833,36 @@ class TeleBot:
         """
         return types.Gifts.de_json(
             apihelper.get_available_gifts(self.token)
+        )
+
+    def get_unique_gift(self, name: str) -> types.UniqueGift:
+        """
+        Use this method to get information about a unique gift by its name. Returns a UniqueGift object on success.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getuniquegift
+
+        :param name: Unique name of the gift
+        :type name: :obj:`str`
+
+        :return: On success, a UniqueGift object is returned.
+        :rtype: :class:`telebot.types.UniqueGift`
+        """
+        return types.UniqueGift.de_json(
+            apihelper.get_unique_gift(self.token, name)
+        )
+
+    def get_chat_share_theme_backdrops(self) -> types.ChatShareThemeBackdrops:
+        """
+        Use this method to get the list of backdrops, which can be used as the background of a theme of the screen
+        for sharing a link to a user or a chat. Requires no parameters. Returns a ChatShareThemeBackdrops object.
+
+        Telegram documentation: https://core.telegram.org/bots/api#getchatsharethemebackdrops
+
+        :return: On success, a ChatShareThemeBackdrops object is returned.
+        :rtype: :class:`telebot.types.ChatShareThemeBackdrops`
+        """
+        return types.ChatShareThemeBackdrops.de_json(
+            apihelper.get_chat_share_theme_backdrops(self.token)
         )
 
     def replace_sticker_in_set(self, user_id: int, name: str, old_sticker: str, sticker: types.InputSticker) -> bool:
@@ -11475,6 +11849,104 @@ class TeleBot:
         """
         handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
         self.add_stopped_message_generation_handler(handler_dict)
+
+    def widget_query_handler(self, func=None, **kwargs):
+        """
+        Handles new incoming queries from widgets in messages sent by the bot or via the bot.
+        As a parameter to the decorator function, it passes :class:`telebot.types.WidgetQuery` object.
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_widget_query_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_widget_query_handler(self, handler_dict):
+        """
+        Adds a widget_query handler.
+        Note that you should use register_widget_query_handler to add widget_query_handler to the bot.
+
+        :meta private:
+
+        :param handler_dict:
+        :return:
+        """
+        self.widget_query_handlers.append(handler_dict)
+
+    def register_widget_query_handler(self, callback: Callable, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
+        """
+        Registers widget_query handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        self.add_widget_query_handler(handler_dict)
+
+    def shared_widget_query_handler(self, func=None, **kwargs):
+        """
+        Handles new incoming queries from forwarded messages with shared widgets.
+        As a parameter to the decorator function, it passes :class:`telebot.types.SharedWidgetQuery` object.
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        def decorator(handler):
+            handler_dict = self._build_handler_dict(handler, func=func, **kwargs)
+            self.add_shared_widget_query_handler(handler_dict)
+            return handler
+
+        return decorator
+
+    def add_shared_widget_query_handler(self, handler_dict):
+        """
+        Adds a shared_widget_query handler.
+        Note that you should use register_shared_widget_query_handler to add shared_widget_query_handler to the bot.
+
+        :meta private:
+
+        :param handler_dict:
+        :return:
+        """
+        self.shared_widget_query_handlers.append(handler_dict)
+
+    def register_shared_widget_query_handler(self, callback: Callable, func: Optional[Callable]=None, pass_bot: Optional[bool]=False, **kwargs):
+        """
+        Registers shared_widget_query handler.
+
+        :param callback: function to be called
+        :type callback: :obj:`function`
+
+        :param func: Function executed as a filter
+        :type func: :obj:`function`
+
+        :param pass_bot: True if you need to pass TeleBot instance to handler(useful for separating handlers into different files)
+        :type pass_bot: :obj:`bool`
+
+        :param kwargs: Optional keyword arguments(custom filters)
+        :return: None
+        """
+        handler_dict = self._build_handler_dict(callback, func=func, pass_bot=pass_bot, **kwargs)
+        self.add_shared_widget_query_handler(handler_dict)
 
 
     def add_custom_filter(self, custom_filter: Union[SimpleCustomFilter, AdvancedCustomFilter]):

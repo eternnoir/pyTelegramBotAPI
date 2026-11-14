@@ -29,7 +29,7 @@ thread_local = threading.local()
 content_type_media = [
     'text', 'audio', 'document', 'animation', 'game', 'photo', 'sticker', 'video', 'video_note', 'voice', 'contact',
     'location', 'venue', 'dice', 'invoice', 'successful_payment', 'connected_website', 'poll', 'passport_data',
-    'web_app_data', 'story', 'giveaway', 'gift', 'unique_gift',
+    'web_app_data', 'story', 'giveaway', 'gift', 'unique_gift', 'widget',
 ]
 
 #: Contains all service content types such as `User joined the group`.
@@ -45,7 +45,7 @@ content_type_service = [
     'suggested_post_info', 'suggested_post_approved', 'suggested_post_approval_failed', 'suggested_post_declined',
     'suggested_post_paid', 'gift_upgrade_sent', 'chat_owner_left', 'chat_owner_changed', 'managed_bot_created',
     'poll_option_added', 'poll_option_deleted', 'community_chat_added', 'community_chat_removed',
-    'community_chat_joined'
+    'community_chat_joined', 'ton_wallet_transfer', 'paid_messages_waived'
 ]
 
 #: All update types, should be used for allowed_updates parameter in polling.
@@ -54,7 +54,8 @@ update_types = [
     "callback_query", "shipping_query", "pre_checkout_query", "poll", "poll_answer", "my_chat_member", "chat_member",
     "chat_join_request", "message_reaction", "message_reaction_count", "removed_chat_boost", "chat_boost",
     "business_connection", "business_message", "edited_business_message", "deleted_business_messages",
-    "purchased_paid_media", "managed_bot", "guest_message", "subscription", "stopped_message_generation"
+    "purchased_paid_media", "managed_bot", "guest_message", "subscription", "stopped_message_generation",
+    "widget_query", "shared_widget_query"
 ]
 
 

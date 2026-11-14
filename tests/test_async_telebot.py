@@ -120,6 +120,32 @@ def test_process_polling_retains_update_processing_tasks():
     )
 
 
+def test_widget_query_handlers():
+    bot = AsyncTeleBot('1:fake', validate_token=False)
+    received = []
+
+    @bot.widget_query_handler()
+    async def widget_query(query):
+        received.append(query.id)
+
+    @bot.shared_widget_query_handler(func=lambda query: query.widget_id == 'w1')
+    async def shared_widget_query(query):
+        received.append(query.id)
+
+    query_type = {'type': 'data'}
+    user = {'id': 2, 'is_bot': False, 'first_name': 'User'}
+    asyncio.run(bot.process_new_updates([
+        types.Update.de_json({'update_id': 1, 'widget_query': {
+            'id': 'q1', 'from': user, 'chat_instance': '1', 'type': query_type, 'data': 'a'}}),
+        types.Update.de_json({'update_id': 2, 'shared_widget_query': {
+            'id': 'q2', 'from': user, 'type': query_type, 'data': 'b', 'widget_id': 'w1'}}),
+        types.Update.de_json({'update_id': 3, 'shared_widget_query': {
+            'id': 'q3', 'from': user, 'type': query_type, 'data': 'c', 'widget_id': 'w2'}}),
+    ]))
+
+    assert received == ['q1', 'q2']
+
+
 def _fake_429(retry_after: int):
     from telebot.asyncio_helper import ApiTelegramException
 
