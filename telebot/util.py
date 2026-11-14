@@ -29,7 +29,7 @@ thread_local = threading.local()
 content_type_media = [
     'text', 'audio', 'document', 'animation', 'game', 'photo', 'sticker', 'video', 'video_note', 'voice', 'contact',
     'location', 'venue', 'dice', 'invoice', 'successful_payment', 'connected_website', 'poll', 'passport_data',
-    'web_app_data', 'story', 'giveaway', 'gift', 'unique_gift',
+    'web_app_data', 'story', 'giveaway', 'gift', 'unique_gift', 'widget',
 ]
 
 #: Contains all service content types such as `User joined the group`.
