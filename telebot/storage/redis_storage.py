@@ -223,14 +223,15 @@ class StateRedisStorage(StateStorageBase):
         )
 
         def reset_data_action(pipe):
-            pipe.multi()
-            if pipe.exists(_key):
-                pipe.hset(_key, "data", "{}")
-            else:
+            # The key is watched, so until multi() the command runs right away
+            # and returns the answer; after multi() it would only be queued.
+            if not pipe.exists(_key):
                 return False
+            pipe.multi()
+            pipe.hset(_key, "data", "{}")
+            return True
 
-        self.redis.transaction(reset_data_action, _key)
-        return True
+        return self.redis.transaction(reset_data_action, _key, value_from_callable=True)
 
     def get_interactive_data(
         self,
@@ -269,14 +270,15 @@ class StateRedisStorage(StateStorageBase):
         )
 
         def save_action(pipe):
-            pipe.multi()
-            if pipe.exists(_key):
-                pipe.hset(_key, "data", json.dumps(data))
-            else:
+            # The key is watched, so until multi() the command runs right away
+            # and returns the answer; after multi() it would only be queued.
+            if not pipe.exists(_key):
                 return False
+            pipe.multi()
+            pipe.hset(_key, "data", json.dumps(data))
+            return True
 
-        self.redis.transaction(save_action, _key)
-        return True
+        return self.redis.transaction(save_action, _key, value_from_callable=True)
 
     def migrate_format(self, bot_id: int, prefix: Optional[str] = "telebot_"):
         """

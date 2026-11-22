@@ -242,10 +242,12 @@ class StateRedisStorage(StateStorageBase):
             message_thread_id,
             bot_id,
         )
-        if await pipe.exists(_key):
-            await pipe.hset(_key, "data", "{}")
-        else:
+        # A command of the pipeline is only queued, its answer comes from execute()
+        pipe.exists(_key)
+        result = await pipe.execute()
+        if not result[0]:
             return False
+        await pipe.hset(_key, "data", "{}")
         return True
 
     def get_interactive_data(
@@ -286,10 +288,12 @@ class StateRedisStorage(StateStorageBase):
             message_thread_id,
             bot_id,
         )
-        if await pipe.exists(_key):
-            await pipe.hset(_key, "data", json.dumps(data))
-        else:
+        # A command of the pipeline is only queued, its answer comes from execute()
+        pipe.exists(_key)
+        result = await pipe.execute()
+        if not result[0]:
             return False
+        await pipe.hset(_key, "data", json.dumps(data))
         return True
 
     def migrate_format(self, bot_id: int, prefix: Optional[str] = "telebot_"):
