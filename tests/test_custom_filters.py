@@ -8,7 +8,7 @@ import json
 import pytest
 
 from telebot import asyncio_filters, types
-from telebot.custom_filters import IsDigitFilter, TextContainsFilter, TextStartsFilter
+from telebot.custom_filters import IsDigitFilter, TextContainsFilter, TextFilter, TextStartsFilter
 
 
 def make_message(**fields):
@@ -69,3 +69,27 @@ def test_async_text_filters_still_match_text_messages(text_message):
         photo=[{"file_id": "f", "file_unique_id": "u", "width": 1, "height": 1}], caption="12345"
     )
     assert asyncio.run(asyncio_filters.TextFilter(contains=["23"]).check(captioned)) is True
+
+
+@pytest.mark.parametrize(
+    "conditions, text",
+    [
+        ({"equals": "Hi", "contains": ["Hello"]}, "oh, HELLO there"),
+        ({"equals": "Hi", "starts_with": "Hello"}, "hello there"),
+        ({"contains": ["Good"], "ends_with": "Bye"}, "see you, BYE"),
+        ({"starts_with": "Hello", "ends_with": "World"}, "big WORLD"),
+        ({"equals": "Hi", "contains": ["Hello"], "starts_with": "Hey", "ends_with": "Bye"}, "see you, bye"),
+    ],
+)
+def test_text_filter_ignore_case_applies_to_every_condition(conditions, text):
+    message = make_message(text=text)
+    assert TextFilter(**conditions, ignore_case=True).check(message) is True
+    assert asyncio.run(asyncio_filters.TextFilter(**conditions, ignore_case=True).check(message)) is True
+    assert TextFilter(**conditions).check(message) is False
+
+
+def test_text_filter_ignore_case_keeps_the_filter_unchanged():
+    text_filter = TextFilter(equals="Hi", contains=["Hello"], ignore_case=True)
+    assert text_filter.check(make_message(text="HI")) is True
+    assert text_filter.equals == "Hi"
+    assert text_filter.contains == ["Hello"]
