@@ -14680,6 +14680,12 @@ class RichText(JsonDeserializable, Dictionaryable, ABC):
     :return: Instance of the class
     :rtype: :class:`RichText`
     """
+    # A RichText-shaped payload that cannot be resolved is plain text and must
+    # not surface as an error. ValueError covers check_json rejecting a nested
+    # scalar, KeyError a missing required field, TypeError/AttributeError a
+    # wrong shape.
+    UNRESOLVED = (ValueError, KeyError, TypeError, AttributeError)
+
     def __init__(self, type: str, **kwargs):
         self.type: str = type
 
@@ -14702,15 +14708,49 @@ class RichText(JsonDeserializable, Dictionaryable, ABC):
                 return original
             try:
                 result = cls._from_dict(parsed)
-            except (KeyError, TypeError, AttributeError):
+            except cls.UNRESOLVED:
                 # A JSON object whose "type" happens to match a RichText but
                 # whose shape does not is still plain text, not a crash.
+                #
+                # ValueError is included because a nested value that is neither
+                # a dict nor a string, e.g. {"type": "bold", "text": 5}, reaches
+                # JsonDeserializable.check_json, which raises ValueError. That
+                # is why the earlier guard still let such input through.
                 return original
             return original if result is None else result
         elif isinstance(json_string, list):
             # "...an Array of :class:`RichText`..."
             return [RichText.de_json(item) for item in json_string]
-        return cls._from_dict(json_string)
+        if not isinstance(json_string, dict):
+            raise TypeError('RichText expects a str, a list or a dict, got %r'
+                            % type(json_string).__name__)
+        try:
+            return cls._from_dict(json_string)
+        except cls.UNRESOLVED:
+            # An already-parsed dict that cannot resolve is not a RichText.
+            # Hand it back untouched rather than raising or half-building it.
+            return json_string
+
+    @classmethod
+    def _resolve(cls, value):
+        """Resolve a nested RichText value, rejecting non-text shapes.
+
+        Subclasses use this for their nested ``text``. A number or a boolean
+        cannot be RichText, and turning it into a RichTextBold with
+        ``text=5`` would build an object that cannot be sent back. Raising
+        here instead makes the parent fall back to plain text as a whole.
+        """
+        if value is None:
+            return None
+        if not isinstance(value, (str, list, dict)):
+            raise TypeError('not a RichText value: %r' % type(value).__name__)
+        resolved = RichText.de_json(value)
+        if resolved is None or isinstance(resolved, list):
+            # None means the type is unknown; a list is not a single RichText.
+            # Returning either would build a parent object whose "text" cannot
+            # be serialized back, e.g. RichTextBold(text=None).
+            raise TypeError('nested value does not resolve to a RichText')
+        return resolved
 
     @classmethod
     def _from_dict(cls, json_string):
@@ -14812,7 +14852,7 @@ class RichTextBold(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -14844,7 +14884,7 @@ class RichTextItalic(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -14876,7 +14916,7 @@ class RichTextUnderline(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -14908,7 +14948,7 @@ class RichTextStrikethrough(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -14940,7 +14980,7 @@ class RichTextSpoiler(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -14980,7 +15020,7 @@ class RichTextDateTime(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15018,7 +15058,7 @@ class RichTextTextMention(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         obj['user'] = User.de_json(obj['user'])
         return cls(**obj)
 
@@ -15052,7 +15092,7 @@ class RichTextSubscript(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15084,7 +15124,7 @@ class RichTextSuperscript(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15116,7 +15156,7 @@ class RichTextMarked(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15148,7 +15188,7 @@ class RichTextCode(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15251,7 +15291,7 @@ class RichTextUrl(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15288,7 +15328,7 @@ class RichTextEmailAddress(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15325,7 +15365,7 @@ class RichTextPhoneNumber(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15362,7 +15402,7 @@ class RichTextBankCardNumber(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15399,7 +15439,7 @@ class RichTextMention(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15436,7 +15476,7 @@ class RichTextHashtag(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15473,7 +15513,7 @@ class RichTextCashtag(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15510,7 +15550,7 @@ class RichTextBotCommand(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15578,7 +15618,7 @@ class RichTextAnchorLink(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15615,7 +15655,7 @@ class RichTextReference(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
@@ -15652,7 +15692,7 @@ class RichTextReferenceLink(RichText):
     def de_json(cls, json_string):
         if json_string is None: return None
         obj = cls.check_json(json_string)
-        obj['text'] = RichText.de_json(obj['text'])
+        obj['text'] = cls._resolve(obj['text'])
         return cls(**obj)
 
     def to_dict(self):
