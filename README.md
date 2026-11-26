@@ -10,7 +10,7 @@
 <p align="center">A simple, but extensible Python implementation for the <a href="https://core.telegram.org/bots/api">Telegram Bot API</a>.</p>
 <p align="center">Both synchronous and asynchronous.</p>
 
-## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#august-24-2026"><img src="https://img.shields.io/badge/Bot%20API-10.3-blue?logo=telegram" alt="Supported Bot API version"></a>
+## <p align="center">Supported Bot API version: <a href="https://core.telegram.org/bots/api#november-9-2026"><img src="https://img.shields.io/badge/Bot%20API-10.4-blue?logo=telegram" alt="Supported Bot API version"></a>
 
 <h2><a href='https://pytba.readthedocs.io/en/latest/index.html'>Official documentation</a></h2>
 <h2><a href='https://pytba.readthedocs.io/ru/latest/index.html'>Official ru documentation</a></h2>

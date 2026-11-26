@@ -152,6 +152,12 @@ class Update(JsonDeserializable):
     :param callback_query: Optional. New incoming callback query
     :type callback_query: :class:`telebot.types.CallbackQuery`
 
+    :param widget_query: Optional. New incoming query from a widget in a message sent by the bot or via the bot
+    :type widget_query: :class:`telebot.types.WidgetQuery`
+
+    :param shared_widget_query: Optional. New incoming query from a forwarded message with a shared widget
+    :type shared_widget_query: :class:`telebot.types.SharedWidgetQuery`
+
     :param shipping_query: Optional. New incoming shipping query. Only for invoices with flexible price
     :type shipping_query: :class:`telebot.types.ShippingQuery`
 
@@ -242,20 +248,22 @@ class Update(JsonDeserializable):
         guest_message = Message.de_json(obj.get('guest_message'))
         subscription = BotSubscriptionUpdated.de_json(obj.get('subscription'))
         stopped_message_generation = MessageGenerationStopped.de_json(obj.get('stopped_message_generation'))
+        widget_query = WidgetQuery.de_json(obj.get('widget_query'))
+        shared_widget_query = SharedWidgetQuery.de_json(obj.get('shared_widget_query'))
 
         return cls(update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                    chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                    my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                    removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
                    deleted_business_messages, purchased_paid_media, managed_bot, guest_message, subscription,
-                   stopped_message_generation)
+                   stopped_message_generation, widget_query, shared_widget_query)
 
     def __init__(self, update_id, message, edited_message, channel_post, edited_channel_post, inline_query,
                  chosen_inline_result, callback_query, shipping_query, pre_checkout_query, poll, poll_answer,
                  my_chat_member, chat_member, chat_join_request, message_reaction, message_reaction_count,
                  removed_chat_boost, chat_boost, business_connection, business_message, edited_business_message,
                  deleted_business_messages, purchased_paid_media, managed_bot, guest_message, subscription,
-                 stopped_message_generation):
+                 stopped_message_generation, widget_query, shared_widget_query):
         self.update_id: int = update_id
         self.message: Optional[Message] = message
         self.edited_message: Optional[Message] = edited_message
@@ -284,6 +292,8 @@ class Update(JsonDeserializable):
         self.guest_message: Optional[Message] = guest_message
         self.subscription: Optional[BotSubscriptionUpdated] = subscription
         self.stopped_message_generation: Optional[MessageGenerationStopped] = stopped_message_generation
+        self.widget_query: Optional[WidgetQuery] = widget_query
+        self.shared_widget_query: Optional[SharedWidgetQuery] = shared_widget_query
 
 class ChatMemberUpdated(JsonDeserializable):
     """
@@ -795,6 +805,12 @@ class ChatFullInfo(JsonDeserializable):
     :param community: Optional. The Community to which the chat belongs
     :type community: :class:`telebot.types.Community`
 
+    :param ton_wallet_card: Optional. For private chats, the TON wallet card of the user, which is shown on their profile page
+    :type ton_wallet_card: :class:`telebot.types.TonWalletCard`
+
+    :param share_theme: Optional. For private chats, supergroups and channels, the theme of the screen for sharing a link to the user or the chat; omitted if the default theme is used
+    :type share_theme: :class:`telebot.types.ChatShareTheme`
+
     :return: Instance of the class
     :rtype: :class:`telebot.types.ChatFullInfo`
     """
@@ -836,6 +852,10 @@ class ChatFullInfo(JsonDeserializable):
             obj['guard_bot'] = User.de_json(obj['guard_bot'])
         if 'community' in obj:
             obj['community'] = Community.de_json(obj['community'])
+        if 'ton_wallet_card' in obj:
+            obj['ton_wallet_card'] = TonWalletCard.de_json(obj['ton_wallet_card'])
+        if 'share_theme' in obj:
+            obj['share_theme'] = ChatShareTheme.de_json(obj['share_theme'])
         return cls(**obj)
 
     def __init__(self, id: int, type: str,
@@ -882,6 +902,7 @@ class ChatFullInfo(JsonDeserializable):
                  unique_gift_colors: Optional[UniqueGiftColors] = None,
                  first_profile_audio: Optional[Audio] = None,
                  guard_bot: Optional[User] = None, community: Optional[Community] = None,
+                 ton_wallet_card: Optional[TonWalletCard] = None, share_theme: Optional[ChatShareTheme] = None,
                  **kwargs):
         self.id: int = id
         self.type: str = type
@@ -936,6 +957,8 @@ class ChatFullInfo(JsonDeserializable):
         self.first_profile_audio: Optional[Audio] = first_profile_audio
         self.guard_bot: Optional[User] = guard_bot
         self.community: Optional[Community] = community
+        self.ton_wallet_card: Optional[TonWalletCard] = ton_wallet_card
+        self.share_theme: Optional[ChatShareTheme] = share_theme
 
 
     @property
@@ -1210,13 +1233,16 @@ class Message(JsonDeserializable):
     :param voice: Optional. Message is a voice message, information about the file
     :type voice: :class:`telebot.types.Voice`
 
-    :param caption: Optional. Caption for the animation, audio, document, paid media, photo, video or voice
+    :param widget: Optional. Message is an HTML widget, information about the widget
+    :type widget: :class:`telebot.types.Widget`
+
+    :param caption: Optional. Caption for the animation, audio, document, live photo, paid media, photo, video, voice, or widget
     :type caption: :obj:`str`
 
     :param caption_entities: Optional. For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear in the caption
     :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
 
-    :param show_caption_above_media: Optional. True, if the caption must be shown above the message media
+    :param show_caption_above_media: Optional. True, if the caption must be shown above the message media or the widget
     :type show_caption_above_media: :obj:`bool`
 
     :param has_media_spoiler: Optional. True, if the message media is covered by a spoiler animation
@@ -1381,6 +1407,9 @@ class Message(JsonDeserializable):
     :param paid_message_price_changed: Optional. Service message: the price for paid messages has changed in the chat
     :type paid_message_price_changed: :class:`telebot.types.PaidMessagePriceChanged`
 
+    :param paid_messages_waived: Optional. Service message: the sender of the message used a link of the other user, which allows sending messages to the user without paying Telegram Stars
+    :type paid_messages_waived: :class:`telebot.types.PaidMessagesWaived`
+
     :param poll_option_added: Optional. Service message: answer option was added to a poll
     :type poll_option_added: :class:`telebot.types.PollOptionAdded`
 
@@ -1401,6 +1430,9 @@ class Message(JsonDeserializable):
 
     :param suggested_post_refunded: Optional. Service message: payment for a suggested post was refunded
     :type suggested_post_refunded: :class:`telebot.types.SuggestedPostRefunded`
+
+    :param ton_wallet_transfer: Optional. Service message: a transfer with a TON wallet
+    :type ton_wallet_transfer: :class:`telebot.types.TonWalletTransfer`
 
     :param video_chat_scheduled: Optional. Service message: video chat scheduled
     :type video_chat_scheduled: :class:`telebot.types.VideoChatScheduled`
@@ -1751,6 +1783,15 @@ class Message(JsonDeserializable):
         if 'community_chat_joined' in obj:
             opts['community_chat_joined'] = CommunityChatJoined.de_json(obj['community_chat_joined'])
             content_type = 'community_chat_joined'
+        if 'widget' in obj:
+            opts['widget'] = Widget.de_json(obj['widget'])
+            content_type = 'widget'
+        if 'ton_wallet_transfer' in obj:
+            opts['ton_wallet_transfer'] = TonWalletTransfer.de_json(obj['ton_wallet_transfer'])
+            content_type = 'ton_wallet_transfer'
+        if 'paid_messages_waived' in obj:
+            opts['paid_messages_waived'] = PaidMessagesWaived.de_json(obj['paid_messages_waived'])
+            content_type = 'paid_messages_waived'
         return cls(message_id, from_user, date, chat, content_type, opts, json_string)
 
     @classmethod
@@ -1903,6 +1944,9 @@ class Message(JsonDeserializable):
         self.community_chat_added: Optional[CommunityChatAdded] = None
         self.community_chat_removed: Optional[CommunityChatRemoved] = None
         self.community_chat_joined: Optional[CommunityChatJoined] = None
+        self.widget: Optional[Widget] = None
+        self.ton_wallet_transfer: Optional[TonWalletTransfer] = None
+        self.paid_messages_waived: Optional[PaidMessagesWaived] = None
         self.game: Optional[Game] = None
         self.passport_data: Optional[PassportData] = None
 
@@ -2020,7 +2064,7 @@ class MessageEntity(Dictionaryable, JsonSerializable, JsonDeserializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#messageentity
 
-    :param type: Type of the entity. Currently, can be “mention” ( @username ), "hashtag" ( #hashtag or #hashtag@chatusername ), "cashtag" ( $USD or $USD@chatusername ), “bot_command” ( /start@jobs_bot ), "url" ( https://telegram.org ), "email" ( do-not-reply@telegram.org ), “phone_number” ( +1-212-555-0123 ), "bold" ( bold text ), "italic" ( italic text ), “underline” (underlined text), “strikethrough” (strikethrough text), “spoiler” (spoiler message), “blockquote” (block quotation), “expandable_blockquote” (collapsed-by-default block quotation), “code” (monowidth string), “pre” (monowidth block), “text_link” (for clickable text URLs), “text_mention” (for users without usernames ), “custom_emoji” (for inline custom emoji stickers), or “date_time” (for formatted date and time).
+    :param type: Type of the entity. Currently, can be “mention” ( @username ), "hashtag" ( #hashtag or #hashtag@chatusername ), "cashtag" ( $USD or $USD@chatusername ), “bot_command” ( /start@jobs_bot ), "url" ( https://telegram.org ), "email" ( do-not-reply@telegram.org ), “phone_number” ( +1-212-555-0123 ), “bank_card_number” (bank card number), “ton_address” (address in the TON blockchain), "bold" ( bold text ), "italic" ( italic text ), “underline” (underlined text), “strikethrough” (strikethrough text), “spoiler” (spoiler message), “blockquote” (block quotation), “expandable_blockquote” (collapsed-by-default block quotation), “code” (monowidth string), “pre” (monowidth block), “text_link” (for clickable text URLs), “text_mention” (for users without usernames ), “custom_emoji” (for inline custom emoji stickers), or “date_time” (for formatted date and time).
     :type type: :obj:`str`
 
     :param offset: Offset in UTF-16 code units to the start of the entity
@@ -3832,7 +3876,7 @@ class ChatMemberRestricted(ChatMember):
     :param can_send_polls: True, if the user is allowed to send polls and checklists
     :type can_send_polls: :obj:`bool`
 
-    :param can_send_other_messages: True, if the user is allowed to send animations, games, stickers and use inline bots
+    :param can_send_other_messages: True, if the user is allowed to send animations, games, stickers, widgets and use inline bots
     :type can_send_other_messages: :obj:`bool`
 
     :param can_add_web_page_previews: True, if the user is allowed to add web page previews to their messages
@@ -3969,7 +4013,7 @@ class ChatPermissions(JsonDeserializable, JsonSerializable, Dictionaryable):
     :param can_send_polls: Optional. True, if the user is allowed to send polls and checklists
     :type can_send_polls: :obj:`bool`
 
-    :param can_send_other_messages: Optional. True, if the user is allowed to send animations, games, stickers and use inline bots
+    :param can_send_other_messages: Optional. True, if the user is allowed to send animations, games, stickers, widgets and use inline bots
     :type can_send_other_messages: :obj:`bool`
 
     :param can_add_web_page_previews: Optional. True, if the user is allowed to add web page previews to their messages
@@ -4738,6 +4782,144 @@ class InputRichMessageContent(Dictionaryable):
     
     def to_json(self) -> str:
         return json.dumps(self.to_dict())
+
+
+class InputWidgetMessageContent(Dictionaryable):
+    """
+    Represents the content of a message with an HTML widget to be sent as the result of an inline query.
+    Currently, widgets can't be sent in response to inline queries in the production environment.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputwidgetmessagecontent
+
+    :param html: HTML code of the widget, 1-32768 bytes. The code must not exceed 4096 bytes when compressed by zlib with the maximum compression level.
+    :type html: :obj:`str`
+
+    :param width: Optional. Width of the widget in logical pixels; omit if the widget must occupy the whole width of the message bubble. The width is clamped by the app to the range from 200 to the maximum width of the message bubble.
+    :type width: :obj:`int`
+
+    :param height: Optional. Height of the widget in logical pixels; omit if the height of the widget isn't fixed. The height is clamped by the app to the range 50-600.
+    :type height: :obj:`int`
+
+    :param public_data: Optional. Public data of the widget, 0-1024 bytes, which will be available wherever the widget is shown. If the widget is shared, then all messages with it will have the same public data.
+    :type public_data: :obj:`str`
+
+    :param chat_data: Optional. Data of the widget, which is specific to the message, 0-1024 bytes
+    :type chat_data: :obj:`str`
+
+    :param caption: Optional. Widget caption, 0-1024 characters after entities parsing
+    :type caption: :obj:`str`
+
+    :param parse_mode: Optional. Mode for parsing entities in the widget caption. See formatting options for more details.
+    :type parse_mode: :obj:`str`
+
+    :param caption_entities: Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+    :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+    :param show_caption_above_media: Optional. Pass True if the caption must be shown above the widget
+    :type show_caption_above_media: :obj:`bool`
+
+    :param allow_queries: Optional. Pass True to allow the widget to send queries to the bot
+    :type allow_queries: :obj:`bool`
+
+    :param is_shared: Optional. Pass True to create a shared widget. Each message sent from the result creates a separate shared widget, whose identifier is received by the bot only in the field widget_id of queries from the widget. To send an existing shared widget in response to an inline query, use InputSharedWidgetMessageContent instead.
+    :type is_shared: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.InputWidgetMessageContent`
+    """
+    def __init__(self, html: str, width: Optional[int] = None, height: Optional[int] = None,
+                 public_data: Optional[str] = None, chat_data: Optional[str] = None, caption: Optional[str] = None,
+                 parse_mode: Optional[str] = None, caption_entities: Optional[List[MessageEntity]] = None,
+                 show_caption_above_media: Optional[bool] = None, allow_queries: Optional[bool] = None,
+                 is_shared: Optional[bool] = None):
+        self.html: str = html
+        self.width: Optional[int] = width
+        self.height: Optional[int] = height
+        self.public_data: Optional[str] = public_data
+        self.chat_data: Optional[str] = chat_data
+        self.caption: Optional[str] = caption
+        self.parse_mode: Optional[str] = parse_mode
+        self.caption_entities: Optional[List[MessageEntity]] = caption_entities
+        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+        self.allow_queries: Optional[bool] = allow_queries
+        self.is_shared: Optional[bool] = is_shared
+
+    def to_dict(self):
+        json_dict = {'html': self.html}
+        if self.width is not None:
+            json_dict['width'] = self.width
+        if self.height is not None:
+            json_dict['height'] = self.height
+        if self.public_data is not None:
+            json_dict['public_data'] = self.public_data
+        if self.chat_data is not None:
+            json_dict['chat_data'] = self.chat_data
+        if self.caption is not None:
+            json_dict['caption'] = self.caption
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
+        if self.caption_entities:
+            json_dict['caption_entities'] = MessageEntity.to_list_of_dicts(self.caption_entities)
+        if self.show_caption_above_media is not None:
+            json_dict['show_caption_above_media'] = self.show_caption_above_media
+        if self.allow_queries is not None:
+            json_dict['allow_queries'] = self.allow_queries
+        if self.is_shared is not None:
+            json_dict['is_shared'] = self.is_shared
+        return json_dict
+
+
+class InputSharedWidgetMessageContent(Dictionaryable):
+    """
+    Represents the content of a message with a shared widget to be sent as the result of an inline query.
+    Currently, widgets can't be sent in response to inline queries in the production environment.
+
+    Telegram documentation: https://core.telegram.org/bots/api#inputsharedwidgetmessagecontent
+
+    :param widget_id: Unique identifier of the shared widget created by the bot
+    :type widget_id: :obj:`str`
+
+    :param chat_data: Optional. Data of the widget, which is specific to the message, 0-1024 bytes
+    :type chat_data: :obj:`str`
+
+    :param caption: Optional. Widget caption, 0-1024 characters after entities parsing
+    :type caption: :obj:`str`
+
+    :param parse_mode: Optional. Mode for parsing entities in the widget caption. See formatting options for more details.
+    :type parse_mode: :obj:`str`
+
+    :param caption_entities: Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+    :type caption_entities: :obj:`list` of :class:`telebot.types.MessageEntity`
+
+    :param show_caption_above_media: Optional. Pass True if the caption must be shown above the widget
+    :type show_caption_above_media: :obj:`bool`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.InputSharedWidgetMessageContent`
+    """
+    def __init__(self, widget_id: str, chat_data: Optional[str] = None, caption: Optional[str] = None,
+                 parse_mode: Optional[str] = None, caption_entities: Optional[List[MessageEntity]] = None,
+                 show_caption_above_media: Optional[bool] = None):
+        self.widget_id: str = widget_id
+        self.chat_data: Optional[str] = chat_data
+        self.caption: Optional[str] = caption
+        self.parse_mode: Optional[str] = parse_mode
+        self.caption_entities: Optional[List[MessageEntity]] = caption_entities
+        self.show_caption_above_media: Optional[bool] = show_caption_above_media
+
+    def to_dict(self):
+        json_dict = {'widget_id': self.widget_id}
+        if self.chat_data is not None:
+            json_dict['chat_data'] = self.chat_data
+        if self.caption is not None:
+            json_dict['caption'] = self.caption
+        if self.parse_mode:
+            json_dict['parse_mode'] = self.parse_mode
+        if self.caption_entities:
+            json_dict['caption_entities'] = MessageEntity.to_list_of_dicts(self.caption_entities)
+        if self.show_caption_above_media is not None:
+            json_dict['show_caption_above_media'] = self.show_caption_above_media
+        return json_dict
 
 
 class ChosenInlineResult(JsonDeserializable):
@@ -9333,6 +9515,9 @@ class ExternalReplyInfo(JsonDeserializable):
     :param voice: Optional. Message is a voice message, information about the file
     :type voice: :class:`Voice`
 
+    :param widget: Optional. Message is an HTML widget, information about the widget
+    :type widget: :class:`Widget`
+
     :param has_media_spoiler: Optional. True, if the message media is covered by a spoiler animation
     :type has_media_spoiler: :obj:`bool`
 
@@ -9420,6 +9605,8 @@ class ExternalReplyInfo(JsonDeserializable):
             obj['checklist'] = Checklist.de_json(obj['checklist'])
         if 'live_photo' in obj:
             obj['live_photo'] = LivePhoto.de_json(obj['live_photo'])
+        if 'widget' in obj:
+            obj['widget'] = Widget.de_json(obj['widget'])
         return cls(**obj)
 
     def __init__(
@@ -9433,7 +9620,8 @@ class ExternalReplyInfo(JsonDeserializable):
             giveaway_winners: Optional[GiveawayWinners]=None, invoice: Optional[Invoice]=None,
             location: Optional[Location]=None, poll: Optional[Poll]=None,
             venue: Optional[Venue]=None, paid_media: Optional[PaidMediaInfo]=None,
-            live_photo: Optional[LivePhoto]=None, checklist: Optional[Checklist]=None, **kwargs) -> None:
+            live_photo: Optional[LivePhoto]=None, checklist: Optional[Checklist]=None,
+            widget: Optional[Widget]=None, **kwargs) -> None:
         self.origin: MessageOrigin = origin
         self.chat: Optional[Chat] = chat
         self.message_id: Optional[int] = message_id
@@ -9460,6 +9648,7 @@ class ExternalReplyInfo(JsonDeserializable):
         self.paid_media: Optional[PaidMediaInfo] = paid_media
         self.live_photo: Optional[LivePhoto] = live_photo
         self.checklist: Optional[Checklist] = checklist
+        self.widget: Optional[Widget] = widget
 
 
 # noinspection PyUnresolvedReferences,PyShadowingBuiltins
@@ -9886,13 +10075,16 @@ class TextQuote(JsonDeserializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#textquote
 
-    :param text: Text of the quoted part of a message that is replied to by the given message
+    :param text: Text of the quoted part of a message that is replied to by the given message; may be empty if the quote was chosen from a rich message
     :type text: :obj:`str`
 
     :param entities: Optional. Special entities that appear in the quote. Currently, only bold, italic, underline, strikethrough, spoiler, custom_emoji, and date_time entities are kept in quotes.
     :type entities: :obj:`list` of :class:`MessageEntity`
 
-    :param position: Approximate quote position in the original message in UTF-16 code units as specified by the sender
+    :param rich_texts: Optional. Rich text of the quote if it was chosen from a rich message. May contain only plain text, RichTextBold, RichTextItalic, RichTextUnderline, RichTextStrikethrough, RichTextSpoiler, RichTextSubscript, RichTextSuperscript, RichTextDateTime, RichTextCustomEmoji, RichTextMathematicalExpression, and arrays of them.
+    :type rich_texts: :obj:`list` of :class:`RichText`
+
+    :param position: Approximate quote position in the original message in UTF-16 code units as specified by the sender. For quotes from rich messages, it is the position in the text formed by joining plain texts of all quotable texts of the message, separated by line feeds.
     :type position: :obj:`int`
 
     :param is_manual: Optional. True, if the quote was chosen manually by the message sender. Otherwise, the quote was added automatically by the server.
@@ -9908,13 +10100,17 @@ class TextQuote(JsonDeserializable):
         obj = cls.check_json(json_string)
         if 'entities' in obj:
             obj['entities'] = [MessageEntity.de_json(entity) for entity in obj['entities']]
+        if 'rich_texts' in obj:
+            obj['rich_texts'] = RichText.de_json(obj['rich_texts'])
         return cls(**obj)
 
     def __init__(self, text: str, position: int,
                  entities: Optional[List[MessageEntity]] = None,
-                 is_manual: Optional[bool] = None, **kwargs) -> None:
+                 is_manual: Optional[bool] = None,
+                 rich_texts: Optional[List[RichText]] = None, **kwargs) -> None:
         self.text: str = text
         self.entities: Optional[List[MessageEntity]] = entities
+        self.rich_texts: Optional[List[RichText]] = rich_texts
         self.position: int = position
         self.is_manual: Optional[bool] = is_manual
 
@@ -9955,7 +10151,10 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
     :param quote_entities: Optional. A JSON-serialized list of special entities that appear in the quote. It can be specified instead of quote_parse_mode.
     :type quote_entities: :obj:`list` of :class:`MessageEntity`
 
-    :param quote_position: Optional. Position of the quote in the original message in UTF-16 code units
+    :param quote_rich_texts: Optional. A JSON-serialized list of quoted parts of the rich message to be replied to. Must contain one element for each quoted text of the message in the order of their appearance. Each of the following is a separate quoted text: the text of a paragraph, a heading, a preformatted block, a footer, or a mathematical expression; the text and the credit of a block quotation or a pull quotation; the summary of a details block; the caption and each cell of a table; the text and the credit of a caption of a media block, a collage, a slideshow, or a map. Texts of blocks nested in lists, block quotations, details, collages, and slideshows are separate quoted texts too. The first and the last elements can contain only a part of the corresponding text; all other elements must contain the whole text. Formatting of the quoted parts must be kept, and rich texts must be nested in the same way as in the message received from the server. Mathematical expressions must be quoted entirely. Buttons in RichBlockButtons, anchors and dividers can't be quoted. Up to 32 quoted texts with total length up to 1024 characters can be specified. Only plain text, RichTextBold, RichTextItalic, RichTextUnderline, RichTextStrikethrough, RichTextSpoiler, RichTextSubscript, RichTextSuperscript, RichTextDateTime, RichTextCustomEmoji, RichTextMathematicalExpression, and arrays of them are kept in the quote; other rich text types are replaced with their text. If non-empty, then quote, quote_parse_mode and quote_entities are ignored.
+    :type quote_rich_texts: :obj:`list` of :class:`RichText`
+
+    :param quote_position: Optional. Position of the quote in the original message in UTF-16 code units. For quotes from rich messages, it is the position in the text formed by joining plain texts of all quotable texts of the message, separated by line feeds.
     :type quote_position: :obj:`int`
 
     :param checklist_task_id: Optional. Identifier of the specific checklist task to be replied to
@@ -9974,13 +10173,16 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
         obj = cls.check_json(json_string)
         if 'quote_entities' in obj:
             obj['quote_entities'] = [MessageEntity.de_json(entity) for entity in obj['quote_entities']]
+        if 'quote_rich_texts' in obj:
+            obj['quote_rich_texts'] = RichText.de_json(obj['quote_rich_texts'])
         return cls(**obj)
 
     def __init__(self, message_id: Optional[int] = None, chat_id: Optional[Union[int, str]] = None,
                  allow_sending_without_reply: Optional[bool] = None, quote: Optional[str] = None,
                  quote_parse_mode: Optional[str] = None, quote_entities: Optional[List[MessageEntity]] = None,
                  quote_position: Optional[int] = None, checklist_task_id: Optional[int] = None,
-                    poll_option_id: Optional[str] = None, ephemeral_message_id: Optional[int] = None, **kwargs) -> None:
+                    poll_option_id: Optional[str] = None, ephemeral_message_id: Optional[int] = None,
+                 quote_rich_texts: Optional[List[RichText]] = None, **kwargs) -> None:
         self.message_id: Optional[int] = message_id
         self.chat_id: Optional[Union[int, str]] = chat_id
         self.allow_sending_without_reply: Optional[bool] = allow_sending_without_reply
@@ -9991,6 +10193,7 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
         self.checklist_task_id: Optional[int] = checklist_task_id
         self.poll_option_id: Optional[str] = poll_option_id
         self.ephemeral_message_id: Optional[int] = ephemeral_message_id
+        self.quote_rich_texts: Optional[List[RichText]] = quote_rich_texts
 
         if self.message_id is None and self.ephemeral_message_id is None:
             raise ValueError("Either 'message_id' or 'ephemeral_message_id' must be provided.")
@@ -10009,6 +10212,8 @@ class ReplyParameters(JsonDeserializable, Dictionaryable, JsonSerializable):
             json_dict['quote_parse_mode'] = self.quote_parse_mode
         if self.quote_entities is not None:
             json_dict['quote_entities'] = [entity.to_dict() for entity in self.quote_entities]
+        if self.quote_rich_texts is not None:
+            json_dict['quote_rich_texts'] = RichText.richtext_to_dict(self.quote_rich_texts)
         if self.quote_position is not None:
             json_dict['quote_position'] = self.quote_position
         if self.checklist_task_id is not None:
@@ -12817,32 +13022,32 @@ class InputStoryContentVideo(InputStoryContent):
         return self.to_json(), {self._video_name: self.video}
 
 
-class StoryAreaPosition(JsonSerializable):
+class AreaPosition(JsonSerializable, JsonDeserializable):
     """
-    Describes the position of a clickable area within a story.
+    Describes the position of a rectangle area on a story media or a TON wallet card.
 
-    Telegram documentation: https://core.telegram.org/bots/api#storyareaposition
+    Telegram documentation: https://core.telegram.org/bots/api#areaposition
 
-    :param x_percentage: The abscissa of the area's center, as a percentage of the media width
+    :param x_percentage: The abscissa of the area's center, as a percentage of the media or the card width
     :type x_percentage: :obj:`float`
 
-    :param y_percentage: The ordinate of the area's center, as a percentage of the media height
+    :param y_percentage: The ordinate of the area's center, as a percentage of the media or the card height
     :type y_percentage: :obj:`float`
 
-    :param width_percentage: The width of the area's rectangle, as a percentage of the media width
+    :param width_percentage: The width of the area's rectangle, as a percentage of the media or the card width
     :type width_percentage: :obj:`float`
 
-    :param height_percentage: The height of the area's rectangle, as a percentage of the media height
+    :param height_percentage: The height of the area's rectangle, as a percentage of the media or the card height
     :type height_percentage: :obj:`float`
 
     :param rotation_angle: The clockwise rotation angle of the rectangle, in degrees; 0-360
     :type rotation_angle: :obj:`float`
 
-    :param corner_radius_percentage: The radius of the rectangle corner rounding, as a percentage of the media width
+    :param corner_radius_percentage: The radius of the rectangle corner rounding, as a percentage of the media or the card width
     :type corner_radius_percentage: :obj:`float`
 
     :return: Instance of the class
-    :rtype: :class:`StoryAreaPosition`
+    :rtype: :class:`AreaPosition`
     """
     def __init__(self, x_percentage: float, y_percentage: float, width_percentage: float,
                     height_percentage: float, rotation_angle: float, corner_radius_percentage: float, **kwargs):
@@ -12852,6 +13057,12 @@ class StoryAreaPosition(JsonSerializable):
         self.height_percentage: float = height_percentage
         self.rotation_angle: float = rotation_angle
         self.corner_radius_percentage: float = corner_radius_percentage
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
 
     def to_json(self):
         return json.dumps(self.to_dict())
@@ -12866,6 +13077,15 @@ class StoryAreaPosition(JsonSerializable):
             'corner_radius_percentage': self.corner_radius_percentage
         }
         return data
+
+
+class StoryAreaPosition(AreaPosition):
+    """Deprecated. Use AreaPosition instead."""
+    def __init__(self, x_percentage: float, y_percentage: float, width_percentage: float,
+                 height_percentage: float, rotation_angle: float, corner_radius_percentage: float, **kwargs):
+        log_deprecation_warning('The class "StoryAreaPosition" is deprecated, use "AreaPosition" instead')
+        super().__init__(x_percentage, y_percentage, width_percentage, height_percentage,
+                         rotation_angle, corner_radius_percentage)
 
 
 class LocationAddress(JsonSerializable):
@@ -13125,7 +13345,7 @@ class StoryArea(JsonSerializable):
     Telegram documentation: https://core.telegram.org/bots/api#storyarea
 
     :param position: Position of the area
-    :type position: :class:`StoryAreaPosition`
+    :type position: :class:`AreaPosition`
 
     :param type: Type of the area
     :type type: :class:`StoryAreaType`
@@ -13133,8 +13353,8 @@ class StoryArea(JsonSerializable):
     :return: Instance of the class
     :rtype: :class:`StoryArea`
     """
-    def __init__(self, position: StoryAreaPosition, type: StoryAreaType, **kwargs):
-        self.position: StoryAreaPosition = position
+    def __init__(self, position: AreaPosition, type: StoryAreaType, **kwargs):
+        self.position: AreaPosition = position
         self.type: StoryAreaType = type
 
     def to_json(self):
@@ -14217,7 +14437,7 @@ class KeyboardButtonRequestManagedBot(JsonSerializable):
     :param suggested_name: Optional. Suggested name for the bot
     :type suggested_name: :obj:`str`
 
-    :param suggested_username: Optional. Suggested username for the bot
+    :param suggested_username: Optional. Suggested username for the bot. The username must end with “bot”. If the user creating the bot has a Telegram Premium subscription, then the username can also end with “agent”, “ai”, “app”, “game”, or “gay”; in this case, the username will be assigned to the bot as a secondary username, and a regular username ending with “bot” will be assigned to the bot automatically.
     :type suggested_username: :obj:`str`
 
     :return: Instance of the class
@@ -14552,7 +14772,8 @@ class InputMediaLink(InputMedia):
 # why not..
 MaybeInaccessibleMessage = Union[InaccessibleMessage, Message]
 
-InputMessageContent = Union[InputTextMessageContent, InputLocationMessageContent, InputVenueMessageContent, InputContactMessageContent, InputInvoiceMessageContent, InputRichMessageContent]
+InputMessageContent = Union[InputTextMessageContent, InputLocationMessageContent, InputVenueMessageContent, InputContactMessageContent, InputInvoiceMessageContent, InputRichMessageContent,
+                            InputWidgetMessageContent, InputSharedWidgetMessageContent]
 
 InputPollMedia = Union[InputMediaAnimation, InputMediaAudio, InputMediaDocument, InputMediaLivePhoto, InputMediaLocation, InputMediaPhoto, InputMediaVenue, InputMediaVideo]
 
@@ -14666,6 +14887,7 @@ class RichText(JsonDeserializable, Dictionaryable, ABC):
     - :class:`RichTextEmailAddress`
     - :class:`RichTextPhoneNumber`
     - :class:`RichTextBankCardNumber`
+    - :class:`RichTextTonAddress`
     - :class:`RichTextMention`
     - :class:`RichTextHashtag`
     - :class:`RichTextCashtag`
@@ -14752,6 +14974,8 @@ class RichText(JsonDeserializable, Dictionaryable, ABC):
             return RichTextPhoneNumber.de_json(obj)
         elif type == 'bank_card_number':
             return RichTextBankCardNumber.de_json(obj)
+        elif type == 'ton_address':
+            return RichTextTonAddress.de_json(obj)
         elif type == 'mention':
             return RichTextMention.de_json(obj)
         elif type == 'hashtag':
@@ -15369,6 +15593,43 @@ class RichTextBankCardNumber(RichText):
         data = super().to_dict()
         data['text'] = RichText.richtext_to_dict(self.text)
         data['bank_card_number'] = self.bank_card_number
+        return data
+
+
+class RichTextTonAddress(RichText):
+    """
+    An address in the TON blockchain.
+
+    Telegram documentation: https://core.telegram.org/bots/api#richtexttonaddress
+
+    :param type: Type of the rich text, always “ton_address”
+    :type type: :obj:`str`
+
+    :param text: Text of the address
+    :type text: :class:`RichText`
+
+    :param address: The address
+    :type address: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`RichTextTonAddress`
+    """
+    def __init__(self, text: RichText, address: str, **kwargs):
+        super().__init__(type='ton_address', **kwargs)
+        self.text: RichText = text
+        self.address: str = address
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['text'] = RichText.de_json(obj['text'])
+        return cls(**obj)
+
+    def to_dict(self):
+        data = super().to_dict()
+        data['text'] = RichText.richtext_to_dict(self.text)
+        data['address'] = self.address
         return data
 
 
@@ -17554,10 +17815,10 @@ class EphemeralMessageParameters(Dictionaryable, JsonSerializable):
 
     Telegram documentation: https://core.telegram.org/bots/api#ephemeralmessageparameters
 
-    :param receiver_user_id: Identifier of the user who will receive the message. It is not guaranteed that the user will receive the message, especially if they are offline. See here for more details.
+    :param receiver_user_id: Optional. Identifier of the user who will receive the message; required unless the message is sent as an ephemeral reply to a callback query. If omitted, then the parameter chat_id of the method is ignored. If specified together with callback_query_id, then it must be the identifier of the user who pressed the button. Must be omitted for messages sent in chats where the bot isn't a member, unless the message is a reply to an ephemeral message. It is not guaranteed that the user will receive the message, especially if they are offline. See here for more details.
     :type receiver_user_id: :obj:`int`
 
-    :param callback_query_id: Optional. Identifier of the callback query which triggered the message, if any
+    :param callback_query_id: Optional. Identifier of the callback query which triggered the message, if any. If specified and receiver_user_id is omitted, then the message is sent as an ephemeral reply to the callback query and will be shown only to the user who pressed the button. Ephemeral replies can't be sent to callback queries from messages in channel direct messages chats. The bot must still answer the callback query using answerCallbackQuery.
     :type callback_query_id: :obj:`str`
 
     :param replace_callback_query_message: Optional. Pass True if the ephemeral message must be shown in place of the original message. Must be False for callback queries from ephemeral messages, which must be edited using regular editEphemeralMessage… methods.
@@ -17566,14 +17827,16 @@ class EphemeralMessageParameters(Dictionaryable, JsonSerializable):
     :return: Instance of the class
     :rtype: :class:`telebot.types.EphemeralMessageParameters`
     """
-    def __init__(self, receiver_user_id: int, callback_query_id: Optional[str] = None,
+    def __init__(self, receiver_user_id: Optional[int] = None, callback_query_id: Optional[str] = None,
                  replace_callback_query_message: Optional[bool] = None):
-        self.receiver_user_id: int = receiver_user_id
+        self.receiver_user_id: Optional[int] = receiver_user_id
         self.callback_query_id: Optional[str] = callback_query_id
         self.replace_callback_query_message: Optional[bool] = replace_callback_query_message
 
     def to_dict(self):
-        data = {'receiver_user_id': self.receiver_user_id}
+        data = {}
+        if self.receiver_user_id is not None:
+            data['receiver_user_id'] = self.receiver_user_id
         if self.callback_query_id is not None:
             data['callback_query_id'] = self.callback_query_id
         if self.replace_callback_query_message is not None:
@@ -18062,4 +18325,717 @@ class BotSubscriptionUpdated(JsonDeserializable):
         if json_string is None: return None
         obj = cls.check_json(json_string)
         obj['user'] = User.de_json(obj.get('user'))
+        return cls(**obj)
+
+
+class Widget(JsonDeserializable):
+    """
+    This object describes an HTML widget.
+
+    Telegram documentation: https://core.telegram.org/bots/api#widget
+
+    :param id: Optional. Unique identifier of the shared widget, which can be used to send the widget again using the method sendSharedWidget; omitted if the widget isn't shared
+    :type id: :obj:`str`
+
+    :param width: Optional. Width of the widget in logical pixels; omitted if the widget must occupy the whole width of the message bubble
+    :type width: :obj:`int`
+
+    :param height: Optional. Height of the widget in logical pixels; omitted if the height of the widget isn't fixed
+    :type height: :obj:`int`
+
+    :param html: HTML code of the widget
+    :type html: :obj:`str`
+
+    :param public_data: Optional. Public data of the widget, which is available wherever the widget is shown. All messages with a shared widget have the same public data.
+    :type public_data: :obj:`str`
+
+    :param chat_data: Optional. Data of the widget, which is specific to the message
+    :type chat_data: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.Widget`
+    """
+    def __init__(self, html: str, id: Optional[str] = None, width: Optional[int] = None, height: Optional[int] = None,
+                 public_data: Optional[str] = None, chat_data: Optional[str] = None, **kwargs):
+        self.id: Optional[str] = id
+        self.width: Optional[int] = width
+        self.height: Optional[int] = height
+        self.html: str = html
+        self.public_data: Optional[str] = public_data
+        self.chat_data: Optional[str] = chat_data
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class WidgetQuery(JsonDeserializable):
+    """
+    This object represents an incoming query from a widget in a message sent by the bot or via the bot.
+    Use answerWidgetQuery to answer the query. Each user can send at most 5 queries per 5 seconds to the bot from all its widgets.
+
+    Telegram documentation: https://core.telegram.org/bots/api#widgetquery
+
+    :param id: Unique identifier for this query
+    :type id: :obj:`str`
+
+    :param from_user: Sender
+    :type from_user: :class:`telebot.types.User`
+
+    :param chat: Optional. Chat with the message containing the widget; omitted if the widget is in an inline message
+    :type chat: :class:`telebot.types.Chat`
+
+    :param message_id: Optional. Identifier of the message containing the widget; omitted if the widget is in an inline message
+    :type message_id: :obj:`int`
+
+    :param inline_message_id: Optional. Identifier of the inline message containing the widget
+    :type inline_message_id: :obj:`str`
+
+    :param chat_instance: Global identifier, uniquely corresponding to the chat to which the message with the widget was sent
+    :type chat_instance: :obj:`str`
+
+    :param chat_type: Optional. For widgets in inline messages, type of the chat to which the message was sent. Can be either “sender” for a private chat with the inline query sender, “private”, “group”, “supergroup”, or “channel”.
+    :type chat_type: :obj:`str`
+
+    :param type: Type of the query
+    :type type: :class:`telebot.types.WidgetQueryType`
+
+    :param data: Data of the query, 1-64 bytes
+    :type data: :obj:`str`
+
+    :param widget_id: Optional. Unique identifier of the shared widget, which sent the query; omitted if the widget isn't shared
+    :type widget_id: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.WidgetQuery`
+    """
+    def __init__(self, id: str, from_user: User, chat_instance: str, type: WidgetQueryType, data: str,
+                 chat: Optional[Chat] = None, message_id: Optional[int] = None, inline_message_id: Optional[str] = None,
+                 chat_type: Optional[str] = None, widget_id: Optional[str] = None, **kwargs):
+        self.id: str = id
+        self.from_user: User = from_user
+        self.chat: Optional[Chat] = chat
+        self.message_id: Optional[int] = message_id
+        self.inline_message_id: Optional[str] = inline_message_id
+        self.chat_instance: str = chat_instance
+        self.chat_type: Optional[str] = chat_type
+        self.type: WidgetQueryType = type
+        self.data: str = data
+        self.widget_id: Optional[str] = widget_id
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['from_user'] = User.de_json(obj.pop('from'))
+        if 'chat' in obj:
+            obj['chat'] = Chat.de_json(obj['chat'])
+        obj['type'] = WidgetQueryType.de_json(obj['type'])
+        return cls(**obj)
+
+
+class SharedWidgetQuery(JsonDeserializable):
+    """
+    This object represents an incoming query from a forwarded message with a shared widget created by the bot.
+    Use answerWidgetQuery to answer the query. Each user can send at most 5 queries per 5 seconds to the bot from all its widgets.
+
+    Telegram documentation: https://core.telegram.org/bots/api#sharedwidgetquery
+
+    :param id: Unique identifier for this query
+    :type id: :obj:`str`
+
+    :param from_user: Sender
+    :type from_user: :class:`telebot.types.User`
+
+    :param type: Type of the query
+    :type type: :class:`telebot.types.WidgetQueryType`
+
+    :param data: Data of the query, 1-64 bytes
+    :type data: :obj:`str`
+
+    :param widget_id: Unique identifier of the shared widget, which sent the query
+    :type widget_id: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.SharedWidgetQuery`
+    """
+    def __init__(self, id: str, from_user: User, type: WidgetQueryType, data: str, widget_id: str, **kwargs):
+        self.id: str = id
+        self.from_user: User = from_user
+        self.type: WidgetQueryType = type
+        self.data: str = data
+        self.widget_id: str = widget_id
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['from_user'] = User.de_json(obj.pop('from'))
+        obj['type'] = WidgetQueryType.de_json(obj['type'])
+        return cls(**obj)
+
+
+class WidgetQueryType(JsonDeserializable, ABC):
+    """
+    This object describes the type of a query from a widget. Currently, it can be one of
+        WidgetQueryTypeData
+        WidgetQueryTypeSignData
+        WidgetQueryTypeSentTransaction
+
+    Telegram documentation: https://core.telegram.org/bots/api#widgetquerytype
+
+    :return: Instance of the class
+    :rtype: :class:`WidgetQueryTypeData` or :class:`WidgetQueryTypeSignData` or :class:`WidgetQueryTypeSentTransaction`
+    """
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if obj['type'] == 'data':
+            return WidgetQueryTypeData.de_json(obj)
+        elif obj['type'] == 'sign_data':
+            return WidgetQueryTypeSignData.de_json(obj)
+        elif obj['type'] == 'sent_transaction':
+            return WidgetQueryTypeSentTransaction.de_json(obj)
+        else:
+            raise ValueError(f"Unknown widget query type: {obj['type']}.")
+
+
+# noinspection PyShadowingBuiltins
+class WidgetQueryTypeData(WidgetQueryType):
+    """
+    The query contains data for the bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#widgetquerytypedata
+
+    :param type: Type of the query, always “data”
+    :type type: :obj:`str`
+
+    :param wallet_card: Optional. TON wallet card of the user who sent the query, if it was sent to the bot along with the query
+    :type wallet_card: :class:`telebot.types.TonWalletCard`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.WidgetQueryTypeData`
+    """
+    def __init__(self, type: str, wallet_card: Optional[TonWalletCard] = None, **kwargs):
+        self.type: str = type
+        self.wallet_card: Optional[TonWalletCard] = wallet_card
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'wallet_card' in obj:
+            obj['wallet_card'] = TonWalletCard.de_json(obj['wallet_card'])
+        return cls(**obj)
+
+
+# noinspection PyShadowingBuiltins
+class WidgetQueryTypeSignData(WidgetQueryType):
+    """
+    The query contains data signed by a TON wallet of the user who sent the query.
+    The data is signed for the domain bot<bot_id>, where <bot_id> is the identifier of the bot.
+
+    Telegram documentation: https://core.telegram.org/bots/api#widgetquerytypesigndata
+
+    :param type: Type of the query, always “sign_data”
+    :type type: :obj:`str`
+
+    :param wallet: The wallet that signed the data
+    :type wallet: :class:`telebot.types.WidgetQueryWallet`
+
+    :param sign_data: JSON-serialized signed data
+    :type sign_data: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.WidgetQueryTypeSignData`
+    """
+    def __init__(self, type: str, wallet: WidgetQueryWallet, sign_data: str, **kwargs):
+        self.type: str = type
+        self.wallet: WidgetQueryWallet = wallet
+        self.sign_data: str = sign_data
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['wallet'] = WidgetQueryWallet.de_json(obj['wallet'])
+        return cls(**obj)
+
+
+# noinspection PyShadowingBuiltins
+class WidgetQueryTypeSentTransaction(WidgetQueryType):
+    """
+    The query notifies the bot about a transaction sent from a TON wallet of the user who sent the query.
+
+    Telegram documentation: https://core.telegram.org/bots/api#widgetquerytypesenttransaction
+
+    :param type: Type of the query, always “sent_transaction”
+    :type type: :obj:`str`
+
+    :param wallet: The wallet from which the transaction was sent
+    :type wallet: :class:`telebot.types.WidgetQueryWallet`
+
+    :param msg_hash: Value of msg_hash of the transaction
+    :type msg_hash: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.WidgetQueryTypeSentTransaction`
+    """
+    def __init__(self, type: str, wallet: WidgetQueryWallet, msg_hash: str, **kwargs):
+        self.type: str = type
+        self.wallet: WidgetQueryWallet = wallet
+        self.msg_hash: str = msg_hash
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['wallet'] = WidgetQueryWallet.de_json(obj['wallet'])
+        return cls(**obj)
+
+
+class WidgetQueryWallet(JsonDeserializable):
+    """
+    This object describes a TON wallet of the user, which is used in a query from a widget.
+
+    Telegram documentation: https://core.telegram.org/bots/api#widgetquerywallet
+
+    :param address: Address of the wallet
+    :type address: :obj:`str`
+
+    :param amount: Balance of the wallet, in the smallest units of the cryptocurrency, as a decimal number
+    :type amount: :obj:`str`
+
+    :param public_key: Optional. Hex-encoded public key of the wallet; omitted if unknown
+    :type public_key: :obj:`str`
+
+    :param state_init: Optional. Base64-encoded serialized StateInit of the wallet contract; omitted if and only if public_key is omitted
+    :type state_init: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.WidgetQueryWallet`
+    """
+    def __init__(self, address: str, amount: str, public_key: Optional[str] = None, state_init: Optional[str] = None, **kwargs):
+        self.address: str = address
+        self.amount: str = amount
+        self.public_key: Optional[str] = public_key
+        self.state_init: Optional[str] = state_init
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class TonWalletCard(JsonDeserializable):
+    """
+    This object describes a TON wallet card, which is shown on the profile page of a user to everyone.
+
+    Telegram documentation: https://core.telegram.org/bots/api#tonwalletcard
+
+    :param address: Address of the wallet
+    :type address: :obj:`str`
+
+    :param amount: Balance of the wallet, in the smallest units of the cryptocurrency, as a decimal number
+    :type amount: :obj:`str`
+
+    :param stickers: Stickers placed on the card
+    :type stickers: :obj:`list` of :class:`telebot.types.TonWalletCardSticker`
+
+    :param background_nft_address: Optional. Address of the NFT of one of the stickers, whose colors must be used for the card background; omitted if the default background must be used
+    :type background_nft_address: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.TonWalletCard`
+    """
+    def __init__(self, address: str, amount: str, stickers: List[TonWalletCardSticker],
+                 background_nft_address: Optional[str] = None, **kwargs):
+        self.address: str = address
+        self.amount: str = amount
+        self.stickers: List[TonWalletCardSticker] = stickers
+        self.background_nft_address: Optional[str] = background_nft_address
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['stickers'] = [TonWalletCardSticker.de_json(sticker) for sticker in obj['stickers']]
+        return cls(**obj)
+
+
+class TonWalletCardSticker(JsonDeserializable):
+    """
+    This object describes a sticker on a TON wallet card.
+
+    Telegram documentation: https://core.telegram.org/bots/api#tonwalletcardsticker
+
+    :param position: Position of the sticker on the card
+    :type position: :class:`telebot.types.AreaPosition`
+
+    :param nft: The NFT shown as the sticker
+    :type nft: :class:`telebot.types.TonNft`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.TonWalletCardSticker`
+    """
+    def __init__(self, position: AreaPosition, nft: TonNft, **kwargs):
+        self.position: AreaPosition = position
+        self.nft: TonNft = nft
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['position'] = AreaPosition.de_json(obj['position'])
+        obj['nft'] = TonNft.de_json(obj['nft'])
+        return cls(**obj)
+
+
+class TonNft(JsonDeserializable):
+    """
+    This object represents an NFT in the TON blockchain.
+
+    Telegram documentation: https://core.telegram.org/bots/api#tonnft
+
+    :param address: Address of the NFT
+    :type address: :obj:`str`
+
+    :param collection_address: Optional. Address of the collection to which the NFT belongs; omitted if unknown
+    :type collection_address: :obj:`str`
+
+    :param index: Index of the NFT among all NFTs from the collection as a decimal number
+    :type index: :obj:`str`
+
+    :param name: Name of the NFT
+    :type name: :obj:`str`
+
+    :param description: Description of the NFT
+    :type description: :obj:`str`
+
+    :param attributes: Optional. Attributes of the NFT
+    :type attributes: :obj:`list` of :class:`telebot.types.TonNftAttribute`
+
+    :param gift: Optional. The unique gift corresponding to the NFT
+    :type gift: :class:`telebot.types.UniqueGift`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.TonNft`
+    """
+    def __init__(self, address: str, index: str, name: str, description: str, collection_address: Optional[str] = None,
+                 attributes: Optional[List[TonNftAttribute]] = None, gift: Optional[UniqueGift] = None, **kwargs):
+        self.address: str = address
+        self.collection_address: Optional[str] = collection_address
+        self.index: str = index
+        self.name: str = name
+        self.description: str = description
+        self.attributes: Optional[List[TonNftAttribute]] = attributes
+        self.gift: Optional[UniqueGift] = gift
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if 'attributes' in obj:
+            obj['attributes'] = [TonNftAttribute.de_json(attribute) for attribute in obj['attributes']]
+        if 'gift' in obj:
+            obj['gift'] = UniqueGift.de_json(obj['gift'])
+        return cls(**obj)
+
+
+class TonNftAttribute(JsonDeserializable):
+    """
+    This object represents an attribute of an NFT in the TON blockchain.
+
+    Telegram documentation: https://core.telegram.org/bots/api#tonnftattribute
+
+    :param trait_type: Trait type of the attribute
+    :type trait_type: :obj:`str`
+
+    :param value: Value of the attribute
+    :type value: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.TonNftAttribute`
+    """
+    def __init__(self, trait_type: str, value: str, **kwargs):
+        self.trait_type: str = trait_type
+        self.value: str = value
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class TonWalletTransfer(JsonDeserializable):
+    """
+    Describes a service message about a transfer with a TON wallet.
+
+    Telegram documentation: https://core.telegram.org/bots/api#tonwallettransfer
+
+    :param transaction_id: Unique identifier of the transaction; may be empty if the transfer hasn't been sent yet
+    :type transaction_id: :obj:`str`
+
+    :param peer_address: Address of the transfer peer in the TON blockchain
+    :type peer_address: :obj:`str`
+
+    :param amount: The amount of transferred cryptocurrency, in the smallest units of the cryptocurrency, as a decimal number; negative for outgoing transfers
+    :type amount: :obj:`str`
+
+    :param comment: Optional. Comment added to the transfer; omitted if the comment is encrypted
+    :type comment: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.TonWalletTransfer`
+    """
+    def __init__(self, transaction_id: str, peer_address: str, amount: str, comment: Optional[str] = None, **kwargs):
+        self.transaction_id: str = transaction_id
+        self.peer_address: str = peer_address
+        self.amount: str = amount
+        self.comment: Optional[str] = comment
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class PaidMessagesWaived(JsonDeserializable):
+    """
+    Describes a service message about the sender of the message using a link of the other user, which allows sending messages
+    to the user without paying Telegram Stars. Currently holds no information.
+
+    Telegram documentation: https://core.telegram.org/bots/api#paidmessageswaived
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.PaidMessagesWaived`
+    """
+    def __init__(self, **kwargs):
+        pass
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class EmojiType(JsonDeserializable, ABC):
+    """
+    This object describes an emoji. Currently, it can be one of
+        EmojiTypeEmoji
+        EmojiTypeCustomEmoji
+
+    Telegram documentation: https://core.telegram.org/bots/api#emojitype
+
+    :return: Instance of the class
+    :rtype: :class:`EmojiTypeEmoji` or :class:`EmojiTypeCustomEmoji`
+    """
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if obj['type'] == 'emoji':
+            return EmojiTypeEmoji.de_json(obj)
+        elif obj['type'] == 'custom_emoji':
+            return EmojiTypeCustomEmoji.de_json(obj)
+        else:
+            raise ValueError(f"Unknown emoji type: {obj['type']}.")
+
+
+# noinspection PyShadowingBuiltins
+class EmojiTypeEmoji(EmojiType):
+    """
+    A regular emoji.
+
+    Telegram documentation: https://core.telegram.org/bots/api#emojitypeemoji
+
+    :param type: Type of the emoji, always “emoji”
+    :type type: :obj:`str`
+
+    :param emoji: The emoji
+    :type emoji: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.EmojiTypeEmoji`
+    """
+    def __init__(self, type: str, emoji: str, **kwargs):
+        self.type: str = type
+        self.emoji: str = emoji
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+# noinspection PyShadowingBuiltins
+class EmojiTypeCustomEmoji(EmojiType):
+    """
+    A custom emoji.
+
+    Telegram documentation: https://core.telegram.org/bots/api#emojitypecustomemoji
+
+    :param type: Type of the emoji, always “custom_emoji”
+    :type type: :obj:`str`
+
+    :param custom_emoji_id: Identifier of the custom emoji. Use getCustomEmojiStickers to get full information about the sticker.
+    :type custom_emoji_id: :obj:`str`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.EmojiTypeCustomEmoji`
+    """
+    def __init__(self, type: str, custom_emoji_id: str, **kwargs):
+        self.type: str = type
+        self.custom_emoji_id: str = custom_emoji_id
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        return cls(**obj)
+
+
+class ChatShareTheme(JsonDeserializable, ABC):
+    """
+    This object describes the theme of the screen for sharing a link to a user or a chat. Currently, it can be one of
+        ChatShareThemeEmoji
+        ChatShareThemeUniqueGift
+
+    Telegram documentation: https://core.telegram.org/bots/api#chatsharetheme
+
+    :return: Instance of the class
+    :rtype: :class:`ChatShareThemeEmoji` or :class:`ChatShareThemeUniqueGift`
+    """
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        if obj['type'] == 'emoji':
+            return ChatShareThemeEmoji.de_json(obj)
+        elif obj['type'] == 'unique_gift':
+            return ChatShareThemeUniqueGift.de_json(obj)
+        else:
+            raise ValueError(f"Unknown chat share theme type: {obj['type']}.")
+
+
+# noinspection PyShadowingBuiltins
+class ChatShareThemeEmoji(ChatShareTheme):
+    """
+    The theme with emoji placed on a background.
+
+    Telegram documentation: https://core.telegram.org/bots/api#chatsharethemeemoji
+
+    :param type: Type of the theme, always “emoji”
+    :type type: :obj:`str`
+
+    :param emojis: The emoji; 0-6 regular or custom emoji
+    :type emojis: :obj:`list` of :class:`telebot.types.EmojiType`
+
+    :param background_backdrop_id: Optional. Identifier of the backdrop used as the background; omitted if the default background is used. Use getChatShareThemeBackdrops to get details about the backdrop.
+    :type background_backdrop_id: :obj:`int`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.ChatShareThemeEmoji`
+    """
+    def __init__(self, type: str, emojis: List[EmojiType], background_backdrop_id: Optional[int] = None, **kwargs):
+        self.type: str = type
+        self.emojis: List[EmojiType] = emojis
+        self.background_backdrop_id: Optional[int] = background_backdrop_id
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['emojis'] = [EmojiType.de_json(emoji) for emoji in obj['emojis']]
+        return cls(**obj)
+
+
+# noinspection PyShadowingBuiltins
+class ChatShareThemeUniqueGift(ChatShareTheme):
+    """
+    The theme based on a unique gift owned by the user or the chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#chatsharethemeuniquegift
+
+    :param type: Type of the theme, always “unique_gift”
+    :type type: :obj:`str`
+
+    :param gift: The gift
+    :type gift: :class:`telebot.types.UniqueGift`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.ChatShareThemeUniqueGift`
+    """
+    def __init__(self, type: str, gift: UniqueGift, **kwargs):
+        self.type: str = type
+        self.gift: UniqueGift = gift
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['gift'] = UniqueGift.de_json(obj['gift'])
+        return cls(**obj)
+
+
+# noinspection PyShadowingBuiltins
+class ChatShareThemeBackdrop(JsonDeserializable):
+    """
+    This object describes a backdrop, which can be used as the background of a theme of the screen for sharing a link to a user or a chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#chatsharethemebackdrop
+
+    :param id: Unique identifier of the backdrop
+    :type id: :obj:`int`
+
+    :param name: Name of the backdrop
+    :type name: :obj:`str`
+
+    :param colors: Colors of the backdrop
+    :type colors: :class:`telebot.types.UniqueGiftBackdropColors`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.ChatShareThemeBackdrop`
+    """
+    def __init__(self, id: int, name: str, colors: UniqueGiftBackdropColors, **kwargs):
+        self.id: int = id
+        self.name: str = name
+        self.colors: UniqueGiftBackdropColors = colors
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['colors'] = UniqueGiftBackdropColors.de_json(obj['colors'])
+        return cls(**obj)
+
+
+class ChatShareThemeBackdrops(JsonDeserializable):
+    """
+    This object contains a list of backdrops, which can be used as the background of a theme of the screen for sharing a link to a user or a chat.
+
+    Telegram documentation: https://core.telegram.org/bots/api#chatsharethemebackdrops
+
+    :param backdrops: The list of backdrops
+    :type backdrops: :obj:`list` of :class:`telebot.types.ChatShareThemeBackdrop`
+
+    :return: Instance of the class
+    :rtype: :class:`telebot.types.ChatShareThemeBackdrops`
+    """
+    def __init__(self, backdrops: List[ChatShareThemeBackdrop], **kwargs):
+        self.backdrops: List[ChatShareThemeBackdrop] = backdrops
+
+    @classmethod
+    def de_json(cls, json_string):
+        if json_string is None: return None
+        obj = cls.check_json(json_string)
+        obj['backdrops'] = [ChatShareThemeBackdrop.de_json(backdrop) for backdrop in obj['backdrops']]
         return cls(**obj)
