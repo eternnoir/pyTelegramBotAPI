@@ -4,8 +4,10 @@ sys.path.append('../')
 
 from html.parser import HTMLParser
 
+import pytest
+
 from telebot import types
-from telebot.formatting import apply_html_entities, hpre
+from telebot.formatting import apply_html_entities, hpre, mcode
 
 
 class AttributeCollector(HTMLParser):
@@ -87,3 +89,20 @@ def test_apply_html_entities_escapes_pre_language():
 def test_apply_html_entities_still_escapes_content():
     entity = types.MessageEntity(type="bold", offset=0, length=4)
     assert apply_html_entities("a<b> c", [entity]) == "<b>a&lt;b&gt;</b> c"
+
+
+@pytest.mark.parametrize('content, escaped', [
+    (r'C:\code\_file.py', r'C:\\code\\_file.py'),
+    (r'\*', r'\\*'),
+    (r'\`', r'\\\`'),
+    ('`value`', r'\`value\`'),
+    ('trailing\\', 'trailing\\\\'),
+    ('plain text\nsecond line', 'plain text\nsecond line'),
+])
+def test_mcode_escapes_code_content(content, escaped):
+    assert mcode(content, language='python') == '```python\n' + escaped + '```'
+
+
+def test_mcode_can_disable_escaping():
+    content = r'\* `value`'
+    assert mcode(content, escape=False) == '```\n' + content + '```'
