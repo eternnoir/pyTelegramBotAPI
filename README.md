@@ -885,7 +885,7 @@ Here are some examples of template:
 * [Spot Seek Bot](https://t.me/SpotSeekBot) ([source](https://github.com/arashnm80/spot-seek-bot)) by [Arashnm80](https://github.com/arashnm80). This is a free & open source telegram bot for downloading tracks, albums or playlists from spotify.
 * [CalendarIT Bot](https://t.me/calendarit_bot) ([source](https://github.com/codebyzen/CalendarIT_Telegram_Bot))by [CodeByZen](https://github.com/codebyzen). A simple, but extensible Python Telegram bot, can post acquainted with what is happening today, tomorrow or what happened 20 years ago to channel. 
 * [DownloadMusicBOT](https://github.com/fcoagz/DownloadMusicBOT) by *Francisco Griman* - It is a simple bot that downloads audio from YouTube videos on Telegram.
-* [AwesomeChatGPTBot](https://github.com/Kourva/AwesomeChatGPTBot) - Simple ChatGTP-3.5 bot. It is FREE and can remember chat history for a while With pre-defined roles!
+* [AwesomeChatGPTBot](https://github.com/Kourva/AwesomeChatGPTBot) - Async pyTelegramBotAPI bot with a modular multi-provider layer, streaming, Cloudflare worker proxy, sessions, inline mode. Free, no API key!
 * [QR-Code For You Bot](https://t.me/qrcode_for_you_bot) ([source](https://github.com/arashnm80/qrcode-for-you-bot)) by [Arashnm80](https://github.com/arashnm80). Telegram qrcode generator bot created with pyhton and telebot.
 * [Best Instagram Downloader Bot](https://t.me/Best_Instagram_Downloader_Bot) ([source](https://github.com/arashnm80/best-instagram-downloader)) by [Arashnm80](https://github.com/arashnm80). Free and open source telegram bot to download posts and reels from Instagram.
 * [4K YouTube Downloader](https://github.com/hansanaD/TelegramYTDLBot/) - Youtube Downloader with upto 4K resolution support. 
