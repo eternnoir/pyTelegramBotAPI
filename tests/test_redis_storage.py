@@ -30,6 +30,11 @@ def storage(prefix):
         storage.redis.delete(key)
 
 
+async def close(client):
+    # aclose() appeared in redis-py 5.0.1, older versions only have close()
+    await (client.aclose() if hasattr(client, "aclose") else client.close())
+
+
 def test_save_and_reset_data_keep_working_for_an_existing_state(storage):
     storage.set_state(CHAT_ID, USER_ID, "order")
 
@@ -77,7 +82,7 @@ def test_async_save_and_reset_data_keep_working_for_an_existing_state(prefix):
             assert await storage.get_state(CHAT_ID, USER_ID) == "order"
         finally:
             await storage.delete_state(CHAT_ID, USER_ID)
-            await storage.redis.aclose()
+            await close(storage.redis)
 
     asyncio.run(scenario())
 
@@ -95,7 +100,7 @@ def test_async_save_and_reset_data_do_not_create_a_missing_state(prefix):
             assert [key async for key in storage.redis.scan_iter(prefix + "*")] == []
         finally:
             await storage.delete_state(CHAT_ID, USER_ID)
-            await storage.redis.aclose()
+            await close(storage.redis)
 
     asyncio.run(scenario())
 
@@ -118,6 +123,65 @@ def test_async_data_of_a_state_deleted_inside_the_context_is_not_restored(prefix
             assert await storage.get_data(CHAT_ID, USER_ID) == {}
         finally:
             await storage.delete_state(CHAT_ID, USER_ID)
-            await storage.redis.aclose()
+            await close(storage.redis)
+
+    asyncio.run(scenario())
+
+
+def delete_the_key_before_the_data_is_written(monkeypatch, pipeline_class):
+    """Have another client delete the state right before save() or reset_data() writes its data.
+
+    That is a delete_state() running at the same moment, for example in another process: the
+    instance lock does not cover it.
+    """
+    import redis
+
+    other_client = redis.Redis.from_url(REDIS_URL)
+    hset = pipeline_class.hset
+
+    def delete_then_hset(pipe, name, *args, **kwargs):
+        monkeypatch.setattr(pipeline_class, "hset", hset)  # only the first write
+        other_client.delete(name)
+        return hset(pipe, name, *args, **kwargs)
+
+    monkeypatch.setattr(pipeline_class, "hset", delete_then_hset)
+
+
+@pytest.mark.parametrize("method", ["save", "reset_data"])
+def test_a_state_deleted_before_the_write_is_not_recreated(storage, prefix, monkeypatch, method):
+    from redis.client import Pipeline
+
+    storage.set_state(CHAT_ID, USER_ID, "order")
+    delete_the_key_before_the_data_is_written(monkeypatch, Pipeline)
+
+    if method == "save":
+        assert storage.save(CHAT_ID, USER_ID, {"address": "street"}) is False
+    else:
+        assert storage.reset_data(CHAT_ID, USER_ID) is False
+
+    assert list(storage.redis.scan_iter(prefix + "*")) == []
+
+
+@pytest.mark.parametrize("method", ["save", "reset_data"])
+def test_async_a_state_deleted_before_the_write_is_not_recreated(prefix, monkeypatch, method):
+    pytest.importorskip("redis")
+    from redis.asyncio.client import Pipeline
+    from telebot.asyncio_storage import StateRedisStorage
+
+    async def scenario():
+        storage = StateRedisStorage(redis_url=REDIS_URL, prefix=prefix)
+        try:
+            await storage.set_state(CHAT_ID, USER_ID, "order")
+            delete_the_key_before_the_data_is_written(monkeypatch, Pipeline)
+
+            if method == "save":
+                assert await storage.save(CHAT_ID, USER_ID, {"address": "street"}) is False
+            else:
+                assert await storage.reset_data(CHAT_ID, USER_ID) is False
+
+            assert [key async for key in storage.redis.scan_iter(prefix + "*")] == []
+        finally:
+            await storage.delete_state(CHAT_ID, USER_ID)
+            await close(storage.redis)
 
     asyncio.run(scenario())

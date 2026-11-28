@@ -223,10 +223,8 @@ class StateRedisStorage(StateStorageBase):
         return json.loads(data) if data else {}
 
     @async_with_lock
-    @async_with_pipeline
     async def reset_data(
         self,
-        pipe,
         chat_id: int,
         user_id: int,
         business_connection_id: Optional[str] = None,
@@ -242,13 +240,17 @@ class StateRedisStorage(StateStorageBase):
             message_thread_id,
             bot_id,
         )
-        # A command of the pipeline is only queued, its answer comes from execute()
-        pipe.exists(_key)
-        result = await pipe.execute()
-        if not result[0]:
-            return False
-        await pipe.hset(_key, "data", "{}")
-        return True
+
+        async def reset_data_action(pipe):
+            # The key is watched, so until multi() the command runs right away
+            # and returns the answer; after multi() it would only be queued.
+            if not await pipe.exists(_key):
+                return False
+            pipe.multi()
+            pipe.hset(_key, "data", "{}")
+            return True
+
+        return await self.redis.transaction(reset_data_action, _key, value_from_callable=True)
 
     def get_interactive_data(
         self,
@@ -268,10 +270,8 @@ class StateRedisStorage(StateStorageBase):
         )
 
     @async_with_lock
-    @async_with_pipeline
     async def save(
         self,
-        pipe,
         chat_id: int,
         user_id: int,
         data: dict,
@@ -288,13 +288,17 @@ class StateRedisStorage(StateStorageBase):
             message_thread_id,
             bot_id,
         )
-        # A command of the pipeline is only queued, its answer comes from execute()
-        pipe.exists(_key)
-        result = await pipe.execute()
-        if not result[0]:
-            return False
-        await pipe.hset(_key, "data", json.dumps(data))
-        return True
+
+        async def save_action(pipe):
+            # The key is watched, so until multi() the command runs right away
+            # and returns the answer; after multi() it would only be queued.
+            if not await pipe.exists(_key):
+                return False
+            pipe.multi()
+            pipe.hset(_key, "data", json.dumps(data))
+            return True
+
+        return await self.redis.transaction(save_action, _key, value_from_callable=True)
 
     def migrate_format(self, bot_id: int, prefix: Optional[str] = "telebot_"):
         """
